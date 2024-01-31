@@ -1,3 +1,6 @@
-from utils.Image import Image
+def main():
+    print("Hello, World!")
 
-print(Image("./data/input/img.png")())
+
+if __name__ == "__main__":
+    main()
