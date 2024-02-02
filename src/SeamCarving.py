@@ -5,6 +5,12 @@ from utils.Algorithm import Algorithm
 
 class SeamCarving(Algorithm):
     def main(self, *args, **kwargs):
+        return self.non_connected_seam(*args, **kwargs)
+
+    def connected_seam(self, *args, **kwargs):
+        pass
+
+    def non_connected_seam(self, *args, **kwargs):
         image, energy, w, h = args
 
         height, width = image.shape
