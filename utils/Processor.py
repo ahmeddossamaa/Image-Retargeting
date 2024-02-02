@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-from utils.Plotter import Plotter
-
 
 class Processor:
     def __init__(self, image):
