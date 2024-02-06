@@ -30,10 +30,10 @@ class SeamCarving(Algorithm):
         matrix = np.zeros((height, width))
 
         new_image = [
-            energy[0]
+
         ]
 
-        for j in range(1, height):
+        for j in range(0, height):
             min_v = np.inf
             index = 0
             for i in range(0, width):
@@ -41,7 +41,9 @@ class SeamCarving(Algorithm):
                     matrix[j - 1][max(i - 1, 0)],
                     matrix[j - 1][i],
                     matrix[j - 1][min(i + 1, len(matrix) - 1)]
-                ) + energy[j, i]
+                ) if j - 1 > 0 else 0
+
+                v = v + energy[j, i]
 
                 if v <= min_v:
                     min_v = v
