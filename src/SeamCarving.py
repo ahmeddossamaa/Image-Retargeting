@@ -1,16 +1,28 @@
 import numpy as np
 
+from config.decorators import Decorators
 from utils.Algorithm import Algorithm
 
 
 class SeamCarving(Algorithm):
-    def main(self, *args, **kwargs):
-        return self.non_connected_seam(*args, **kwargs)
+    def __init__(self, connected=False):
+        super(SeamCarving, self).__init__()
 
+        self.connected = connected
+
+    def _main(self, *args, **kwargs):
+        return \
+            self.dis_connected_seam(*args, **kwargs) \
+            if not self.connected \
+            else self.connected_seam(*args, **kwargs)
+
+    @Decorators.log_class_method_time
     def connected_seam(self, *args, **kwargs):
+        # TODO: Implement Connected Seam Carving.
         pass
 
-    def non_connected_seam(self, *args, **kwargs):
+    @Decorators.log_class_method_time
+    def dis_connected_seam(self, *args, **kwargs):
         image, energy, w, h = args
 
         height, width = image.shape
@@ -38,12 +50,13 @@ class SeamCarving(Algorithm):
                 matrix[j][i] = v
 
             # remove pixel from image
-            temp = list(energy[j])
-            temp.pop(index)
-            new_image.append(temp)
+            energy[j][index] = 600
+            # temp = list(energy[j])
+            # temp.pop(index)
+            # new_image.append(temp)
             # np.delete(energy[j], index)
             # energy[j].pop(index)
 
-        print(len(new_image), len(new_image[0]))
+        # print(len(new_image), len(new_image[0]))
 
-        return new_image
+        return energy
