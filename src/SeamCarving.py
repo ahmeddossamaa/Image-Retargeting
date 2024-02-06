@@ -5,24 +5,24 @@ from utils.Algorithm import Algorithm
 
 
 class SeamCarving(Algorithm):
-    def __init__(self, connected=False):
+    def __init__(self, is_connected=False):
         super(SeamCarving, self).__init__()
 
-        self.connected = connected
+        self.is_connected = is_connected
 
     def _main(self, *args, **kwargs):
         return \
-            self.dis_connected_seam(*args, **kwargs) \
-            if not self.connected \
-            else self.connected_seam(*args, **kwargs)
+            self.__dis_connected(*args, **kwargs) \
+            if not self.is_connected \
+            else self.__connected(*args, **kwargs)
 
     @Decorators.log_class_method_time
-    def connected_seam(self, *args, **kwargs):
+    def __connected(self, *args, **kwargs):
         # TODO: Implement Connected Seam Carving.
         pass
 
     @Decorators.log_class_method_time
-    def dis_connected_seam(self, *args, **kwargs):
+    def __dis_connected(self, *args, **kwargs):
         image, energy, w, h = args
 
         height, width = image.shape
