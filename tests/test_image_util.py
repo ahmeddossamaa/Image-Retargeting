@@ -8,6 +8,6 @@ img = Image(f"{DataPath.INPUT_PATH.value}/img.png", gray=True)()
 
 img = SobelFilter(img)().image()
 
-img = SeamCarving(is_connected=False)(img, img, 1, 1)
+img,energy = SeamCarving(is_connected=False)(img, img, 1, 1)
 
 Plotter.image(img)

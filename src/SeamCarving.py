@@ -1,13 +1,10 @@
 import numpy as np
-
 from config.decorators import Decorators
 from utils.Algorithm import Algorithm
-
 
 class SeamCarving(Algorithm):
     def __init__(self, is_connected=False):
         super(SeamCarving, self).__init__()
-
         self.is_connected = is_connected
 
     def _main(self, *args, **kwargs):
@@ -29,10 +26,6 @@ class SeamCarving(Algorithm):
 
         matrix = np.zeros((height, width))
 
-        new_image = [
-
-        ]
-
         for j in range(0, height):
             min_v = np.inf
             index = 0
@@ -51,14 +44,11 @@ class SeamCarving(Algorithm):
 
                 matrix[j][i] = v
 
-            # remove pixel from image
-            energy[j][index] = 600
-            # temp = list(energy[j])
-            # temp.pop(index)
-            # new_image.append(temp)
-            # np.delete(energy[j], index)
-            # energy[j].pop(index)
+            # Remove pixel from energy matrix
+            energy[j][index] = np.inf
 
-        # print(len(new_image), len(new_image[0]))
+        # Remove corresponding pixels from the image
+        image = np.delete(image, np.argmin(matrix[-1]), axis=1)
+        energy = np.delete(energy, np.argmin(matrix[-1]), axis=1)
 
-        return energy
+        return image, energy
