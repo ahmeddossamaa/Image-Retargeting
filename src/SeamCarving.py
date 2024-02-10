@@ -61,4 +61,4 @@ class SeamCarving(Algorithm):
         # image = np.delete(image, np.argmin(matrix[-1]), axis=1)
         # energy = np.delete(energy, np.argmin(matrix[-1]), axis=1)
 
-        return np.array(new_image)
+        return np.array(new_image), energy

@@ -4,7 +4,7 @@ from src.SobelFilter import SobelFilter
 from utils.Image import Image
 from config.plotter import Plotter
 
-PATH = f"{DataPath.INPUT_PATH.value}/img.png"
+PATH = f"{DataPath.INPUT_PATH.value}/img_2.png"
 
 img = Image(PATH, gray=True)()
 img_rgb = Image(PATH, gray=False)()
@@ -12,11 +12,10 @@ img_rgb = Image(PATH, gray=False)()
 # Plotter.image(img_rgb)
 
 # img = img.to_gray_scale()
+temp = img_rgb.copy()
+for i in range(20):
+    img = SobelFilter(img)().image()
 
-img = SobelFilter(img)().image()
+    temp, img = SeamCarving(is_connected=False)(temp, img, 1, 1)
 
-img = SeamCarving(is_connected=False)(img_rgb, img, 1, 1)
-
-# print(img.shape)
-
-Plotter.images([img_rgb, img], 1, 2)
+Plotter.images([img_rgb, temp], 1, 2)
