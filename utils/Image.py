@@ -18,9 +18,9 @@ class Image:
     def __read(self):
         return imread(
             self.__path,
-            IMREAD_GRAYSCALE
+            0
             if self.__gray
-            else IMREAD_UNCHANGED
+            else 1
         )
 
     """

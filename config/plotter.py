@@ -3,8 +3,17 @@ import matplotlib.pyplot as plt
 
 class Plotter:
     @staticmethod
-    def image(image):
-        plt.imshow(image)
+    def __transform_to_rgb(image):
+        im2 = image.copy()
+        im2[:, :, 0] = image[:, :, 2]
+        im2[:, :, 2] = image[:, :, 0]
+        return im2
+
+    @staticmethod
+    def image(img):
+        plt.imshow(
+            Plotter.__transform_to_rgb(img)
+        )
         plt.show()
 
     @staticmethod
@@ -14,6 +23,8 @@ class Plotter:
         for i, img in enumerate(images):
             figure.add_subplot(rows, columns, i + 1)
 
-            plt.imshow(img)
+            plt.imshow(
+                Plotter.__transform_to_rgb(img)
+            )
 
         plt.show()
