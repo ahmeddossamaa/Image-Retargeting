@@ -1,4 +1,4 @@
-from cv2 import imread, IMREAD_GRAYSCALE, IMREAD_UNCHANGED, resize
+from cv2 import imread, IMREAD_GRAYSCALE, IMREAD_UNCHANGED
 
 from config.decorators import Decorators
 from config.helper import Helper
@@ -12,15 +12,15 @@ class Image:
         self.__img = self.__read()
 
     def __call__(self, *args, **kwargs):
-        return self.__img
+        return self.__img.copy()
 
     @Decorators.log_class_method_time
     def __read(self):
         return imread(
             self.__path,
-            0
+            IMREAD_GRAYSCALE
             if self.__gray
-            else 1
+            else IMREAD_UNCHANGED
         )
 
     """

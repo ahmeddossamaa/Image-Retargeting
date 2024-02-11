@@ -16,18 +16,15 @@ class SeamCarving(Algorithm):
 
     @Decorators.log_class_method_time
     def __connected(self, *args, **kwargs):
-        # TODO: Implement Connected Seam Carving.
-        pass
-
-    @Decorators.log_class_method_time
-    def __dis_connected(self, *args, **kwargs):
         image, energy, w, h = args
 
         height, width, z = image.shape
 
         matrix = np.zeros((height, width))
 
+        # new_image = np.zeros((height, width - 1, z))
         new_image = []
+        new_energy = []
 
         for j in range(0, height):
             min_v = np.inf
@@ -47,18 +44,65 @@ class SeamCarving(Algorithm):
 
                 matrix[j][i] = v
 
-            # Remove pixel from energy matrix
-            # energy[j][index] = np.inf
+        row = matrix[-1]
+        j = np.argmin(row)
 
-            # image[j, index] = [0, 0, 0]
+        for k in range(w):
+            new_image = []
+            for i in range(height - 1, -1, -1):
+                if j == 0:
+                    j = np.argmin(matrix[i, j:j + 2])
+                elif j == w - 1:
+                    j = np.argmin(matrix[i, j - 1:j + 1]) + j - 1
+                else:
+                    j = np.argmin(matrix[i, j - 1:j + 2]) + j - 1
 
-            new_image.append(
-                # image[j]
-                np.delete(image[j], index, axis=0)
+                matrix[i, j] = np.inf
+
+                new_energy.append(
+                    np.delete(energy[i], j, axis=0)
+                )
+
+                new_image.append(
+                    np.delete(image[i], j, axis=0)
+                )
+
+            new_image.reverse()
+            image = new_image
+
+        return np.array(new_image), np.array(new_energy)
+
+    @Decorators.log_class_method_time
+    def __dis_connected(self, *args, **kwargs):
+        image, energy, w, h = args
+
+        height, width, z = image.shape
+
+        new_image = []
+        new_energy = []
+
+        matrix = np.zeros((height, width))
+
+        for j in range(0, height):
+            for i in range(0, width):
+                v = min(
+                    matrix[j - 1][max(i - 1, 0)],
+                    matrix[j - 1][i],
+                    matrix[j - 1][min(i + 1, len(matrix) - 1)]
+                ) if j - 1 > 0 else 0
+
+                v = v + energy[j, i]
+
+                matrix[j][i] = v
+
+            indices = [index for index, value in sorted(enumerate(matrix[j]), key=lambda x: x[1])[:w]]
+
+            new_energy.append(
+                np.delete(energy[j], indices, axis=0)
             )
 
-        # Remove corresponding pixels from the image
-        # image = np.delete(image, np.argmin(matrix[-1]), axis=1)
-        # energy = np.delete(energy, np.argmin(matrix[-1]), axis=1)
+            new_image.append(
+                np.delete(image[j], indices, axis=0)
+            )
 
-        return np.array(new_image), energy
+        return np.array(new_image), np.array(energy)

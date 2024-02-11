@@ -1,11 +1,14 @@
 from abc import abstractmethod
 
+from config.decorators import Decorators
+
 
 class Processor:
     def __init__(self, image):
         self._image = image
         self._origin = image.copy()
 
+    @Decorators.log_class_method_time
     def __call__(self, *args, **kwargs):
         self.main(*args, **kwargs)
 

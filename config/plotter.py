@@ -4,16 +4,25 @@ import matplotlib.pyplot as plt
 class Plotter:
     @staticmethod
     def __transform_to_rgb(image):
+        if len(image.shape) < 3:
+            return image
+
         im2 = image.copy()
         im2[:, :, 0] = image[:, :, 2]
         im2[:, :, 2] = image[:, :, 0]
         return im2
 
     @staticmethod
-    def image(img):
+    def __set_plt(img, title=""):
         plt.imshow(
             Plotter.__transform_to_rgb(img)
         )
+        plt.title(title)
+
+    @staticmethod
+    def image(img, title=""):
+        Plotter.__set_plt(img, title)
+
         plt.show()
 
     @staticmethod
