@@ -26,9 +26,8 @@ class SeamCarving(Algorithm):
         new_image = []
         new_energy = []
 
+        index = -1
         for j in range(0, height):
-            min_v = np.inf
-            index = 0
             for i in range(0, width):
                 v = min(
                     matrix[j - 1][max(i - 1, 0)],
@@ -38,37 +37,48 @@ class SeamCarving(Algorithm):
 
                 v = v + energy[j, i]
 
-                if v <= min_v:
-                    min_v = v
-                    index = i
+                if v > 0:
+                    index = j
 
                 matrix[j][i] = v
 
-        row = matrix[-1]
-        j = np.argmin(row)
-
         for k in range(w):
             new_image = []
+            new_energy = []
+            new_matrix = []
+
+            row = matrix[index]
+            j = np.argmin(row)
+
             for i in range(height - 1, -1, -1):
-                if j == 0:
-                    j = np.argmin(matrix[i, j:j + 2])
-                elif j == w - 1:
-                    j = np.argmin(matrix[i, j - 1:j + 1]) + j - 1
-                else:
-                    j = np.argmin(matrix[i, j - 1:j + 2]) + j - 1
+                start = max(0, j - 1)
+                end = min(j + 2, len(matrix[i - 1]) - 1)
 
-                matrix[i, j] = np.inf
-
-                new_energy.append(
-                    np.delete(energy[i], j, axis=0)
-                )
+                j = np.argmin(
+                    matrix[i - 1][
+                        start: end
+                    ]
+                ) + start
 
                 new_image.append(
                     np.delete(image[i], j, axis=0)
                 )
 
-            new_image.reverse()
+                # new_energy.append(
+                #     np.delete(energy[i], j, axis=0)
+                # )
+
+                new_matrix.append(
+                    np.delete(matrix[i], j, axis=0)
+                )
+
+            # new_image.reverse()
+            # new_energy.reverse()
+            # new_matrix.reverse()
+
             image = new_image
+            # energy = new_energy
+            matrix = new_matrix
 
         return np.array(new_image), np.array(new_energy)
 
