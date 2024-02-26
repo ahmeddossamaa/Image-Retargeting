@@ -1,13 +1,17 @@
-from enum import Enum
-
-
-# Setup
 import numpy as np
+from enum import Enum
 
 
 class DataPath(Enum):
     INPUT_PATH = "../data/input"
     OUTPUT_PATH = "../data/output"
+
+
+class Events(Enum):
+    CONNECT = "connect"
+    DISCONNECT = "disconnect"
+    ERROR = "error"
+    TEST = "test"
 
 
 Filters = {
@@ -24,3 +28,4 @@ Filters = {
         ])
     }
 }
+

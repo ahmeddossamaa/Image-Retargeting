@@ -15,7 +15,7 @@ class Image:
     def __call__(self, *args, **kwargs):
         return self.__img.copy()
 
-    @Decorators.log_class_method_time
+    @Decorators.Loggers.log_class_method_time
     def __read(self):
         return imread(
             self.__path,

@@ -1,7 +1,6 @@
 from config.constants import DataPath
-from src.SeamCarving import SeamCarving
-from src.SobelFilter import SobelFilter
-from src.CannyProcessor import CannyProcessor
+from src.processors.SeamCarving import SeamCarving
+from src.processors.SobelFilter import SobelFilter
 from utils.Image import Image
 from config.plotter import Plotter
 

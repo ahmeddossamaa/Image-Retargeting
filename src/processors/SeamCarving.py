@@ -14,7 +14,7 @@ class SeamCarving(Algorithm):
             if not self.is_connected \
             else self.__connected(*args, **kwargs)
 
-    @Decorators.log_class_method_time
+    @Decorators.Loggers.log_class_method_time
     def __connected(self, *args, **kwargs):
         image, energy, w, h = args
 
@@ -82,7 +82,7 @@ class SeamCarving(Algorithm):
 
         return np.array(new_image), np.array(new_energy)
 
-    @Decorators.log_class_method_time
+    @Decorators.Loggers.log_class_method_time
     def __dis_connected(self, *args, **kwargs):
         image, energy, w, h = args
 

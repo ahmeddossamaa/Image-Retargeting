@@ -1,7 +1,7 @@
 from config.constants import DataPath
 from config.plotter import Plotter
-from src.CannyProcessor import CannyProcessor
-from src.SobelFilter import SobelFilter
+from src.processors.CannyProcessor import CannyProcessor
+from src.processors.SobelFilter import SobelFilter
 from utils.Image import Image
 
 img = Image(f"{DataPath.INPUT_PATH.value}/img_2.png")()

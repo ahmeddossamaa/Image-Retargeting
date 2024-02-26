@@ -1,20 +1,46 @@
 import time
 
+from utils.App import App
+from utils.Socket import Socket
+
 
 class Decorators:
-    @staticmethod
-    def log_class_method_time(func):
-        def wrapper(*args, **kwargs):
-            start_time = time.perf_counter()
-            result = func(*args, **kwargs)
-            end_time = time.perf_counter()
+    class Sockets:
+        @staticmethod
+        def On(event):
+            return Socket.get_instance().on(event)
 
-            execution_time = end_time - start_time
+    class Routers:
+        @staticmethod
+        def Get(rule):
+            return App.get_instance().get(rule)
 
-            class_name = args[0].__class__.__name__
+        @staticmethod
+        def Post(route):
+            return App.get_instance().post(route)
 
-            print(f"Function '{class_name}.{func.__name__}' executed in {execution_time:.4f} seconds")
+        @staticmethod
+        def Put(route):
+            return App.get_instance().put(route)
 
-            return result
+        @staticmethod
+        def Delete(route):
+            return App.get_instance().delete(route)
 
-        return wrapper
+    class Loggers:
+        @staticmethod
+        def log_class_method_time(func):
+            def wrapper(*args, **kwargs):
+                start_time = time.perf_counter()
+                result = func(*args, **kwargs)
+                end_time = time.perf_counter()
+
+                execution_time = end_time - start_time
+
+                class_name = args[0].__class__.__name__
+
+                print(f"Function '{class_name}.{func.__name__}' executed in {execution_time:.4f} seconds")
+
+                return result
+
+            return wrapper

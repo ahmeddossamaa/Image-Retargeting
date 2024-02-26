@@ -7,7 +7,7 @@ from scipy.signal import convolve2d
 
 
 class SobelFilter(Processor):
-    @Decorators.log_class_method_time
+    @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
         sobel_filter = Filters.get('SOBEL')
 
