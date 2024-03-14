@@ -29,13 +29,28 @@ class Decorators:
 
     class Loggers:
         @staticmethod
+        def _get_exec_time_with_result(func, *args, **kwargs):
+            start_time = time.perf_counter()
+            result = func(*args, **kwargs)
+            end_time = time.perf_counter()
+
+            return result, end_time - start_time
+
+        @staticmethod
+        def log_method_time(func):
+            def wrapper(*args, **kwargs):
+                result, execution_time = Decorators.Loggers._get_exec_time_with_result(func, *args, **kwargs)
+
+                print(f"Function '{func.__name__}' executed in {execution_time:.4f} seconds")
+
+                return result
+
+            return wrapper
+
+        @staticmethod
         def log_class_method_time(func):
             def wrapper(*args, **kwargs):
-                start_time = time.perf_counter()
-                result = func(*args, **kwargs)
-                end_time = time.perf_counter()
-
-                execution_time = end_time - start_time
+                result, execution_time = Decorators.Loggers._get_exec_time_with_result(func, *args, **kwargs)
 
                 class_name = args[0].__class__.__name__
 

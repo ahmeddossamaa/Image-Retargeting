@@ -1,7 +1,9 @@
+from src.controllers.RetargetController import RetargetController
 from src.controllers.SetupController import SetupController
 
 controllers = [
-    SetupController
+    SetupController,
+    RetargetController
 ]
 
 

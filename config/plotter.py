@@ -7,10 +7,10 @@ class Plotter:
         if len(image.shape) < 3:
             return image
 
-        im2 = image.copy()
-        im2[:, :, 0] = image[:, :, 2]
-        im2[:, :, 2] = image[:, :, 0]
-        return im2
+        # im2 = image.copy()
+        # im2[:, :, 0] = image[:, :, 2]
+        # im2[:, :, 2] = image[:, :, 0]
+        return image
 
     @staticmethod
     def __set_plt(img, title=""):
