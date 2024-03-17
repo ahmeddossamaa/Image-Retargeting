@@ -44,4 +44,4 @@ class DisconnectedSC(SeamCarving):
                 np.delete(image[j], indices, axis=0)
             )
 
-        return np.array(new_image), np.array(energy)
+        return np.array(new_image)

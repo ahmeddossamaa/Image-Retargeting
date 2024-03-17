@@ -11,16 +11,23 @@ class SobelFilter(Processor):
     def main(self, *args, **kwargs):
         sobel_filter = Filters.get('SOBEL')
 
-        gx = np.abs(convolve2d(
+        mode = 'same'
+
+        gx = (convolve2d(
             self._origin,
             sobel_filter.get('X'),
-            mode='same'
+            mode=mode
         ))
 
-        gy = np.abs(convolve2d(
+        gy = (convolve2d(
             self._origin,
             sobel_filter.get('Y'),
-            mode='same'
+            mode=mode
         ))
 
         self._image = np.sqrt(gx ** 2 + gy ** 2)
+
+        # maxi = np.max(self._image)
+        # mini = np.min(self._image)
+        #
+        # self._image = np.diff(self._image, mini) / (maxi - mini)

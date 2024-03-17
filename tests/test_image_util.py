@@ -6,7 +6,7 @@ from src.processors.sc.ThreadedSC import ThreadedSC
 from utils.Image import Image
 from config.plotter import Plotter
 
-name = "img_5.png"
+name = "img_3.png"
 
 PATH = f"{DataPath.INPUT_PATH.value}/{name}"
 
@@ -23,10 +23,10 @@ energy = SobelFilter(img_gray)().image()
 
 ratio = 0.75
 
-img_new1, energy1 = ThreadedSC(img_new, energy, ratio)()
-# img_new2, energy2 = ConnectedSC(img_new, energy, ratio)()
-# img_new, energy = DisconnectedSC(img_new, energy, ratio)()
+# img_new = ThreadedSC(img_new, energy, ratio)()
+img_new = ConnectedSC(img_new, energy, ratio)()
+# img_new = DisconnectedSC(img_new, energy, ratio)()
 
 Image.save(img_new, name)
 
-Plotter.images([img_org, img_new1, energy1], 1, 3)
+Plotter.images([energy, img_new], 1, 2)

@@ -1,3 +1,4 @@
+import threading
 from threading import Thread
 
 import numpy as np
@@ -51,45 +52,53 @@ class ThreadedSC(SeamCarving):
 
         @Decorators.Loggers.log_method_time
         def execute():
-            n = 16
+            n = 1
             dw = width // n
-            for n in range(n):
-                idx = n * dw
+            for s in range(n):
+                idx = s * dw
 
-                t = Thread(target=process_width, args=(idx, idx + dw))
+                if n == 1:
+                    process_width(idx, idx + dw)
+                else:
+                    t = Thread(target=process_width, args=(idx, idx + dw))
 
-                t.start()
+                    t.start()
 
         execute()
 
-        _, indices = Helper.Lists.sort_with_indices(matrix[index])
+        # _, indices = Helper.Lists.sort_with_indices(matrix[index])
+
+        new_image = [None] * height
+        new_matrix = [None] * height
+
+        threads = []
+
+        def process_row(matrix, image, i, j, new_image, new_matrix):
+            start = max(0, j - 1)
+            end = min(j + 2, len(matrix[i - 1]) - 1)
+
+            row = matrix[i - 1][start:end]
+            j = np.argmin(row) + start
+
+            new_image[i] = np.delete(image[i], j, axis=0)
+            new_matrix[i] = np.delete(matrix[i], j, axis=0)
 
         for k in range(w):
-            new_image = []
-            new_matrix = []
-
-            row = matrix[index]
-            j = np.argmin(row)
+            j = np.argmin(matrix[height - 1])
 
             for i in range(height - 1, -1, -1):
-                start = max(0, j - 1)
-                end = min(j + 2, len(matrix[i - 1]) - 1)
+                t = threading.Thread(target=process_row, args=(matrix, image, i, j, new_image, new_matrix))
+                threads.append(t)
+                t.start()
 
-                j = np.argmin(
-                    matrix[i - 1][
-                        start: end
-                    ]
-                ) + start
+                if len(threads) >= threading.active_count():
+                    for t in threads:
+                        t.join()
+                    threads = []
 
-                new_image.append(
-                    np.delete(image[i], j, axis=0)
-                )
-
-                new_matrix.append(
-                    np.delete(matrix[i], j, axis=0)
-                )
+                j = np.argmin(matrix[i - 1])
 
             image = new_image
             matrix = new_matrix
 
-        return np.array(new_image), np.array(temp)
+        return np.array(new_image)

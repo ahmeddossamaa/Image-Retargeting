@@ -1,6 +1,7 @@
 import io
 
 import PIL.Image
+import numpy as np
 
 
 class Helper:
@@ -16,11 +17,11 @@ class Helper:
         def get_stream(img, mimetype):
             image = PIL.Image.fromarray(img)
 
-            image_stream = io.BytesIO()
+            stream = io.BytesIO()
 
-            image.save(image_stream, format=mimetype.split('/')[1])
+            image.save(stream, format=mimetype.split('/')[1])
 
-            return image_stream.getvalue()
+            return stream.getvalue()
 
     class Lists:
         @staticmethod
@@ -28,3 +29,12 @@ class Helper:
             sorted_lst = sorted(enumerate(lst), key=lambda x: x[1])
             sorted_indices = [index for index, _ in sorted_lst]
             return sorted_lst, sorted_indices
+
+    class Math:
+        @staticmethod
+        def sigmoid(x):
+            return 1 / 1 + np.exp(x)
+
+        @staticmethod
+        def scale(x, start=0.0, end=255.0):
+            return (x - start) / (end - start)
