@@ -12,6 +12,16 @@ class Image:
 
         self.__img = self.__read()
 
+    def load(self):
+        # Load image data from file
+        # Implementation depends on the library you're using to handle images
+        pass
+
+    def copy(self):
+        # Create a copy of the image object
+        copy_image = Image(self.__path, self.__gray)
+        copy_image.__img = self.__img.copy()  # Assuming __img is the attribute containing image data
+        return copy_image
     def __call__(self, *args, **kwargs):
         return self.__img.copy()
 

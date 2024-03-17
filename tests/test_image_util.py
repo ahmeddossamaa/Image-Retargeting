@@ -4,7 +4,7 @@ from src.processors.SobelFilter import SobelFilter
 from utils.Image import Image
 from config.plotter import Plotter
 
-PATH = f"{DataPath.INPUT_PATH.value}/img_3.png"
+PATH = "C:/Users/GH/Desktop/backend/Image-Retargeting/data/input/3.png"
 
 img = Image(PATH, gray=True)()
 img_rgb = Image(PATH, gray=False)
@@ -17,7 +17,7 @@ energy = SobelFilter(img)().image()
 
 # Plotter.image(energy)
 
-img_new, energy = SeamCarving(is_connected=True)(img_new, energy, 100, 1)
+img_new, energy = SeamCarving(is_connected=True)(img_new, energy, 200, 1)
 
 Image.save(img_new, "img_4.png")
 
