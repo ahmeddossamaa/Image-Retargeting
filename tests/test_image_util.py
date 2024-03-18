@@ -1,12 +1,14 @@
 from config.constants import DataPath
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.ConnectedSCV2 import ConnectedSCV2
 from src.processors.sc.DisconnectedSC import DisconnectedSC
+from src.processors.sc.DisconnectedSCV2 import DisconnectedSCV2
 from src.processors.sc.ThreadedSC import ThreadedSC
 from utils.Image import Image
 from config.plotter import Plotter
 
-name = "img_3.png"
+name = "img_5.png"
 
 PATH = f"{DataPath.INPUT_PATH.value}/{name}"
 
@@ -24,8 +26,10 @@ energy = SobelFilter(img_gray)().image()
 ratio = 0.75
 
 # img_new = ThreadedSC(img_new, energy, ratio)()
-img_new = ConnectedSC(img_new, energy, ratio)()
+# img_new = ConnectedSC(img_new, energy, ratio, color=False)()
+img_new = ConnectedSCV2(img_new, energy, ratio, color=False)()
 # img_new = DisconnectedSC(img_new, energy, ratio)()
+# img_new = DisconnectedSCV2(img_new, energy, ratio)()
 
 Image.save(img_new, name)
 

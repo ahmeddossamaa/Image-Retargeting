@@ -27,7 +27,7 @@ class SobelFilter(Processor):
 
         self._image = np.sqrt(gx ** 2 + gy ** 2)
 
-        # maxi = np.max(self._image)
-        # mini = np.min(self._image)
-        #
-        # self._image = np.diff(self._image, mini) / (maxi - mini)
+        maxi = np.max(self._image)
+        mini = np.min(self._image)
+
+        self._image = np.diff(self._image, mini) / (maxi - mini)

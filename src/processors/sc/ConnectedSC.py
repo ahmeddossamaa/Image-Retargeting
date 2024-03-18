@@ -24,13 +24,7 @@ class ConnectedSC(SeamCarving):
 
         matrix = np.zeros((height, width))
 
-        # max_e = np.max(energy)
-        # min_e = np.min(energy)
-
-        # print(energy)
-
         new_image = []
-        new_energy = []
 
         index = -1
         for j in range(0, height):
@@ -38,10 +32,8 @@ class ConnectedSC(SeamCarving):
                 v = min(
                     matrix[j - 1][max(i - 1, 0)],
                     matrix[j - 1][i],
-                    matrix[j - 1][min(i + 1, len(matrix) - 1)]
+                    matrix[j - 1][min(i + 1, len(matrix[0]) - 1)]
                 ) if j - 1 > 0 else 0
-
-                # v = v + Helper.Math.scale(energy[j, i], start=min_e, end=max_e)
 
                 v = v + energy[j, i]
 
@@ -50,11 +42,7 @@ class ConnectedSC(SeamCarving):
 
                 matrix[j][i] = v
 
-        temp = matrix
-
-        # print(matrix)
-
-        # Plotter.image(temp)
+        # Plotter.image(matrix)
 
         for k in range(w):
             new_image = []
@@ -62,38 +50,38 @@ class ConnectedSC(SeamCarving):
             new_matrix = []
 
             row = matrix[index]
-            j = np.argmin(row)
+            i = np.argmin(row)
 
             # if np.max(row) == 0:
             #     index -= 1
 
-            for i in range(height - 1, -1, -1):
-                start = max(0, j - 1)
-                end = min(j + 2, len(matrix[i - 1]) - 1)
+            for j in range(height - 1, -1, -1):
+                start = max(0, i - 1)
+                end = min(i + 2, len(matrix[j - 1]) - 1)
 
-                j = np.argmin(
-                    matrix[i - 1][
+                i = np.argmin(
+                    matrix[j - 1][
                         start: end
                     ]
                 ) + start
 
                 if self._color:
-                    image[i][j] = [0, 255, 0]
+                    image[j][i] = [0, 255, 0]
                     new_image.append(
-                        image[i]
+                        image[j]
                     )
 
-                    matrix[i][j] = math.inf
+                    matrix[j][i] = math.inf
                     new_matrix.append(
-                        matrix[i]
+                        matrix[j]
                     )
                 else:
                     new_image.append(
-                        np.delete(image[i], j, axis=0)
+                        np.delete(image[j], i, axis=0)
                     )
 
                     new_matrix.append(
-                        np.delete(matrix[i], j, axis=0)
+                        np.delete(matrix[j], i, axis=0)
                     )
 
             image = new_image

@@ -10,6 +10,8 @@ class SeamCarving(Algorithm):
         self._energy = energy
         self._ratio = ratio
 
+        self._height, self._width, self._z = self._img.shape
+
     @abstractmethod
     def _main(self, *args, **kwargs):
         pass
