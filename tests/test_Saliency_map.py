@@ -6,8 +6,8 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import Model
 from config.constants import DataPath
 from config.decorators import Decorators
+from src.processors.sc.ConnectedSC import ConnectedSC
 from utils.Image import Image
-from src.processors.SeamCarving import SeamCarving
 from src.processors.SobelFilter import SobelFilter
 from config.plotter import Plotter
 from scipy.ndimage import sobel
@@ -18,7 +18,9 @@ import time
 base_model = ResNet50(weights='imagenet')
 model = Model(inputs=base_model.input, outputs=base_model.get_layer('conv5_block3_out').output)
 
-image_path = "C:/Users/GH/Desktop/backend/Image-Retargeting/data/input/img_3.png"
+name = "img_5.png"
+
+image_path = f"{DataPath.INPUT_PATH.value}/{name}"
 
 def generate_gradient_map(image):
     # Convert image to grayscale if it's not already
@@ -90,7 +92,8 @@ energy_map = combine_maps(gradient_map, saliency_map_resized, depth_map_gray)
 img_new = img_rgb()
 print("test1")
 
-img_new, energy = SeamCarving(is_connected=True)(img_new, energy_map, 100, 1)
+# img_new, energy = SeamCarving(is_connected=True)(img_new, energy_map, 100, 1)
+img_new = ConnectedSC(img_new, energy_map, 0.75, color=False)()
 
 # Calculate time taken
 execution_time = time.time() - start_time

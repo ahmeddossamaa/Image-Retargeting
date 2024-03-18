@@ -71,11 +71,9 @@ def compute_and_compare_edge_histograms(image1, image2):
 def extract_and_compare_features_SIFT(image1, image2):
     # Read images
 
-
-    # Extract SIFT features
-    sift1 = cv2.xfeatures2d.SIFT_create()
+    sift1 = cv2.SIFT().create()
     kp1, des1 = sift1.detectAndCompute(image1, None)
-    sift2 = cv2.xfeatures2d.SIFT_create()
+    sift2 = cv2.SIFT().create()
     kp2, des2 = sift2.detectAndCompute(image2, None)
 
     # Match features
