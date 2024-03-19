@@ -2,22 +2,18 @@ from config.constants import DataPath
 from src.SeamCarving import SeamCarving
 from src.SobelFilterProcessor import SobelFilterProcessor
 from utils.Image import Image
-<<<<<<< Updated upstream
 from utils.Plotter import Plotter
-
 img = Image(f"{DataPath.INPUT_PATH.value}/img.png")()
-=======
 from config.plotter import Plotter
 import cv2
 
 name = "img_20.png"
->>>>>>> Stashed changes
+
 
 sobel = SobelFilterProcessor(img)().image()
 
 result = SeamCarving()(img, sobel, 1, 1)
 
-<<<<<<< Updated upstream
 Plotter.image(sobel)
 =======
 img_new = img_rgb.rgb()
@@ -41,4 +37,4 @@ Image.save(img_new, name)
 Plotter.images([img_gray, img_new], 1, 2)
 image_path_out = f"{DataPath.OUTPUT_PATH.value}/{name}"
 cv2.imwrite(image_path_out, img_new)
->>>>>>> Stashed changes
+
