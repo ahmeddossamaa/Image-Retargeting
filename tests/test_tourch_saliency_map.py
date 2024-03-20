@@ -1,23 +1,20 @@
 import cv2
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.models import Model
 from config.constants import DataPath
 from config.decorators import Decorators
 from src.processors.sc.ConnectedSC import ConnectedSC
-from utils.Image import Image
 from src.processors.SobelFilter import SobelFilter
 from config.plotter import Plotter
 from scipy.ndimage import sobel
 import matplotlib.pyplot as plt
 import time
+from PIL import Image
 
+import torch
+from torchvision import models, transforms
 
-# Load pre-trained DenseNet model
-base_model = ResNet50(weights='imagenet')
-model = Model(inputs=base_model.input, outputs=base_model.get_layer('conv5_block3_out').output)
+model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+model.eval()
 
 name = "img_5.png"
 
@@ -39,16 +36,38 @@ def generate_gradient_map(image):
 
     return gradient_map
 
-def generate_saliency_map(image_path, model):
-    img = image.load_img(image_path, target_size=(224, 224))
-    img_array = image.img_to_array(img)
-    img_array = preprocess_input(img_array)
-    img_array = np.expand_dims(img_array, axis=0)
+img = Image.open(image_path)
+img = img.convert('RGB')  # Convert the image to RGB if it's not
+img_new = img
 
-    feature_maps = model.predict(img_array)
-    saliency_map = np.mean(feature_maps, axis=-1).squeeze()
+def preprocess_image(img):
+    preprocess = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
 
-    return saliency_map
+    img_tensor = preprocess(img).unsqueeze(0)
+    img_tensor.requires_grad = True
+    return img_tensor
+
+def generate_saliency_map(img, model):
+    img_tensor = preprocess_image(img)
+    img_tensor.requires_grad_()
+
+    logits = model(img_tensor)
+
+    max_index = logits.argmax(dim=1)
+
+    one_hot = torch.zeros_like(logits).scatter_(1, max_index.unsqueeze(-1), 1.0)
+
+    model.zero_grad()
+    logits.backward(gradient=one_hot)
+
+    gradients = img_tensor.grad.data.abs().squeeze()
+
+    return gradients
 
 def load_depth_map(depth_map_path):
     depth_map = cv2.imread(depth_map_path, cv2.IMREAD_UNCHANGED)
@@ -73,31 +92,34 @@ def combine_maps(gradient_map, saliency_map, depth_map):
 
 input_image = cv2.imread(image_path)
 
-img_rgb = Image(image_path, gray=False)
+
 def resize_map_to_match(map_to_resize, target_shape):
+    # Ensure the input is a NumPy array
+    map_to_resize = np.array(map_to_resize)
     return cv2.resize(map_to_resize, (target_shape[1], target_shape[0]), interpolation=cv2.INTER_LINEAR)
 
 # Measure time
 start_time = time.time()
 
 gradient_map = generate_gradient_map(input_image)
-saliency_map = generate_saliency_map(image_path, model)
+saliency_map = generate_saliency_map(img, model)
 depth_map = load_depth_map(image_path)
 
 gradient_map_shape = gradient_map.shape
-
+print(gradient_map_shape)
 # Resize saliency_map and depth_map to match gradient_map
 saliency_map_resized = resize_map_to_match(saliency_map, gradient_map_shape)
 depth_map_resized = resize_map_to_match(depth_map, gradient_map_shape)
 depth_map_gray = cv2.cvtColor(depth_map_resized, cv2.COLOR_BGR2GRAY)
 
 # energy_map = combine_maps(gradient_map, saliency_map_resized, depth_map_gray)
-energy_map= saliency_map_resized
-img_new = img_rgb()
+energy_map= saliency_map
+
+
 print("test1")
+img_np = np.array(img_new)
 
-
-img_new = ConnectedSC(img_new, energy_map, 0.75, color=False)()
+img_new = ConnectedSC(img_np, energy_map, 0.75, color=False)()
 
 
 # Calculate time taken
