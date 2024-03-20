@@ -42,18 +42,14 @@ class ConnectedSC(SeamCarving):
 
                 matrix[j][i] = v
 
-        # Plotter.image(matrix)
+        Plotter.image(matrix, off=True)
 
         for k in range(w):
             new_image = []
-            new_energy = []
             new_matrix = []
 
             row = matrix[index]
             i = np.argmin(row)
-
-            # if np.max(row) == 0:
-            #     index -= 1
 
             for j in range(height - 1, -1, -1):
                 start = max(0, i - 1)
