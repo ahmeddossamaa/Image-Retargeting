@@ -12,13 +12,15 @@ image = Image(f"{PATH}/{name}")
 
 image_rgb = image.rgb()
 
-Plotter.images([
-    image.rgb(),
-    image.gray(),
-    image.lab(),
-], 1, 3, off=True)
+# Plotter.images([
+#     image.rgb(),
+#     image.gray(),
+#     image.lab(),
+# ], 1, 3, off=True)
 
 saliency_map = SaliencyMap(image)().image()
+
+# Plotter.image(saliency_map)
 
 result = ConnectedSC(image_rgb, saliency_map, 0.50, color=False)()
 
