@@ -20,13 +20,19 @@ class Plotter:
         plt.title(title)
 
     @staticmethod
-    def image(img, title=""):
+    def image(img, title="", off=False):
+        if off:
+            return
+
         Plotter.__set_plt(img, title)
 
         plt.show()
 
     @staticmethod
-    def images(images, rows, columns, size=(10, 7)):
+    def images(images, rows, columns, size=(10, 7), off=False):
+        if off:
+            return
+
         figure = plt.figure(figsize=size)
 
         for i, img in enumerate(images):

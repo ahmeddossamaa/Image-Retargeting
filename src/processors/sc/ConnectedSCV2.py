@@ -17,14 +17,16 @@ class ConnectedSCV2(SeamCarving):
         self._matrix = np.zeros((self._height, self._width))
 
     @Decorators.Loggers.log_class_method_time
-    def __accumulate(self):
-        index = -1
+    def _main(self, *args, **kwargs):
+        image = self._img
+        energy = self._energy
 
-        matrix = self._matrix
-        shift_map = np.zeros((self._height, self._width))
+        height, width, z = image.shape
 
-        start = 0
-        end = len(matrix[0]) - 1
+        seams = int(width - width * self._ratio)
+
+        matrix = np.zeros((height, width))
+        shift_map = np.zeros((height, width))
 
         def get_min(j, k, start, end):
             l = max(k - 1, start)
@@ -35,49 +37,35 @@ class ConnectedSCV2(SeamCarving):
             right = matrix[j][r]
 
             if left <= mid and left <= right:
-                return left, l
+                temp = left, l
             elif mid <= left and mid <= right:
-                return mid, k
+                temp = mid, k
+            else:
+                temp = right, r
 
-            return right, r
+            return temp
 
-        for j in range(0, self._height):
-            for i in range(0, self._width):
-                v = 0
-                least_index = i
-                if j - 1 > 0:
-                    v, least_index = get_min(j - 1, i, start, end)
+        new_image = []
 
-                    # v = matrix[j - 1][least_index]
+        index = -1
+        for j in range(0, height):
+            for i in range(0, width):
+                v, l = get_min(j - 1, i, 0, width - 1) if j - 1 > 0 else (0, i)
 
-                v = v + self._energy[j, i]
+                v = v + energy[j, i]
 
                 if v > 0:
                     index = j
 
                 matrix[j][i] = v
-                shift_map[j][i] = int(least_index - i)
+                shift_map[j][i] = l - i
 
-        return matrix, shift_map, index
+                # if np.abs(l - i) > 1:
+                #     print(i, j, v, l - i)
 
-    @Decorators.Loggers.log_class_method_time
-    def _main(self, *args, **kwargs):
-        image = self._img
+        Plotter.image(matrix, off=True)
 
-        height, width, z = image.shape
-
-        w = int(width - width * self._ratio)
-
-        new_image = []
-
-        matrix, shift_map, index = self.__accumulate()
-
-        # print(matrix)
-        # print(shift_map)
-
-        # Plotter.image(matrix)
-
-        for k in range(w):
+        for k in range(seams):
             new_image = []
             new_matrix = []
 
@@ -85,15 +73,7 @@ class ConnectedSCV2(SeamCarving):
             i = np.argmin(row)
 
             for j in range(height - 1, -1, -1):
-                start = max(0, i - 1)
-                # end = min(i + 2, len(matrix[j - 1]) - 1)
-                end = len(matrix[j - 1]) - 1
-
-                # i = np.argmin(
-                #     matrix[j - 1][
-                #         start: end
-                #     ]
-                # ) + start
+                # print(j, i, shift_map[j, i])
 
                 if self._color:
                     image[j][i] = [0, 255, 0]
@@ -114,7 +94,9 @@ class ConnectedSCV2(SeamCarving):
                         np.delete(matrix[j], i, axis=0)
                     )
 
-                i = min(int(i + shift_map[j][i]), end)
+                i += int(shift_map[j][i])
+
+            # raise Exception("test")
 
             image = new_image
             matrix = new_matrix
