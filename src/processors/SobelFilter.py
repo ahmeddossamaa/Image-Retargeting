@@ -1,33 +1,26 @@
 import numpy as np
 
-from config.constants import Filters
+from cv2 import normalize, CV_64F, Sobel, NORM_MINMAX, CV_8U, GaussianBlur
 from config.decorators import Decorators
 from utils.Processor import Processor
-from scipy.signal import convolve2d
 
 
 class SobelFilter(Processor):
+    def __init__(self, image, blur=False, ksize=3):
+        self._blur = blur
+        self._ksize = ksize
+        super(SobelFilter, self).__init__(image)
+
     @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
-        sobel_filter = Filters.get('SOBEL')
+        if self._blur:
+            self._origin = GaussianBlur(self._origin, (9, 9), 0)
 
-        mode = 'same'
+        gradient_x = Sobel(self._origin, CV_64F, 1, 0, ksize=self._ksize)
+        gradient_y = Sobel(self._origin, CV_64F, 0, 1, ksize=self._ksize)
 
-        gx = (convolve2d(
-            self._origin,
-            sobel_filter.get('X'),
-            mode=mode
-        ))
+        gradient_magnitude = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
 
-        gy = (convolve2d(
-            self._origin,
-            sobel_filter.get('Y'),
-            mode=mode
-        ))
+        gradient_normalized = normalize(gradient_magnitude, None, 0, 255, NORM_MINMAX, CV_8U)
 
-        self._image = np.sqrt(gx ** 2 + gy ** 2)
-
-        maxi = np.max(self._image)
-        mini = np.min(self._image)
-
-        self._image = np.diff(self._image, mini) / (maxi - mini)
+        self._image = gradient_normalized

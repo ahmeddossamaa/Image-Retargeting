@@ -9,10 +9,10 @@ from config.plotter import Plotter
 from src.processors.sc.SeamCarving import SeamCarving
 
 
-class ConnectedSC(SeamCarving):
+class ForwardSC(SeamCarving):
     def __init__(self, img, energy, ratio, color=False):
         self._color = color
-        super(ConnectedSC, self).__init__(img, energy, ratio)
+        super(ForwardSC, self).__init__(img, energy, ratio)
 
     @Decorators.Loggers.log_class_method_time
     def _main(self, *args, **kwargs):
@@ -22,6 +22,8 @@ class ConnectedSC(SeamCarving):
         height, width, z = image.shape
 
         w = int(width - width * self._ratio)
+
+        # print(w)
 
         matrix = np.zeros((height, width))
 
@@ -40,6 +42,21 @@ class ConnectedSC(SeamCarving):
                     index = j
 
                 matrix[j][i] = v
+
+        # def accumulate(s, e, step):
+        #     for i in range(s, e, step):
+        #         idx = i + 1 if step == 1 else i - 1
+        #
+        #         prev = energy[j][i]
+        #         next = energy[j][idx]
+        #
+        #         matrix[j][i] += prev
+        #         if next >= prev:
+        #             matrix[j][idx] += prev
+        #
+        # for j in range(0, height):
+        #     accumulate(0, width - 1, 1)
+        #     accumulate(width - 1, 0, -1)
 
         Plotter.image(matrix, off=True)
 
@@ -63,10 +80,10 @@ class ConnectedSC(SeamCarving):
         new_image = [[] for i in range(height)]
         new_matrix = [[] for i in range(height)]
         for k in range(w):
-            row = matrix[index]
+            row = matrix[0]
             i = np.argmin(row)
 
-            for j in range(height - 1, -1, -1):
+            for j in range(0, height, 1):
                 start = 0
                 end = len(matrix[j]) - 1
 
