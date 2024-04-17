@@ -149,4 +149,4 @@ plt.axis('off')
 
 plt.show()
 
-Plotter.images([input_image, img_new], 1, 2)
+Plotter.images([input_image, img_new], 1, 2) 

@@ -13,13 +13,15 @@ from config.plotter import Plotter
 from scipy.ndimage import sobel
 import matplotlib.pyplot as plt
 import time
+from midas import MiDaS
 
 
 # Load pre-trained DenseNet model
 base_model = ResNet50(weights='imagenet')
 model = Model(inputs=base_model.input, outputs=base_model.get_layer('conv5_block3_out').output)
 
-name = "img_5.png"
+name = "img_1.png"
+
 
 image_path = f"{DataPath.INPUT_PATH.value}/{name}"
 

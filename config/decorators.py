@@ -13,19 +13,39 @@ class Decorators:
     class Routers:
         @staticmethod
         def Get(rule):
-            return App.get_instance().get(rule)
+            def decorator(f):
+                app = App.get_instance()
+                app.route(rule, methods=['GET'])(f)
+                return f
+
+            return decorator
 
         @staticmethod
         def Post(route):
-            return App.get_instance().post(route)
+            def decorator(f):
+                app = App.get_instance()
+                app.route(route, methods=['POST'])(f)
+                return f
+
+            return decorator
 
         @staticmethod
         def Put(route):
-            return App.get_instance().put(route)
+            def decorator(f):
+                app = App.get_instance()
+                app.route(route, methods=['PUT'])(f)
+                return f
+
+            return decorator
 
         @staticmethod
         def Delete(route):
-            return App.get_instance().delete(route)
+            def decorator(f):
+                app = App.get_instance()
+                app.route(route, methods=['DELETE'])(f)
+                return f
+
+            return decorator
 
     class Loggers:
         @staticmethod
