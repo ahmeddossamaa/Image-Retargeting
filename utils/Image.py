@@ -52,7 +52,7 @@ class Image:
     @Decorators.Loggers.log_class_method_time
     def save(image, name):
         try:
-            imwrite(f"{DataPath.OUTPUT_PATH.value}/{name}", image)
+            imwrite(f"{DataPath.OUTPUT_PATH.value}/{name}", cvtColor(image, COLOR_BGR2RGB))
         except Exception as e:
             print(e)
 

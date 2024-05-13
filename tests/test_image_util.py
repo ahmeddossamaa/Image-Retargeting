@@ -3,7 +3,7 @@ from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ConnectedSCV2 import ConnectedSCV2
-from src.processors.sc.ConnectedSCV3 import ConnectedSCV3
+from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.DisconnectedSC import DisconnectedSC
 from src.processors.sc.DisconnectedSCV2 import DisconnectedSCV2
 from src.processors.sc.ForwardSC import ForwardSC

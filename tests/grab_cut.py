@@ -11,7 +11,7 @@ from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ForwardSC import ForwardSC
 from utils.Image import Image
 
-n = 7
+n = 2
 
 name = f"img_{n}.png"
 
@@ -25,53 +25,44 @@ height, width, z = img_rgb.shape
 
 _, result = cv2.threshold(img_gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
-saliency = SaliencyMap(image, 0.3)().image()
-sobel = SobelFilter(img_gray)().image()
+# saliency = SaliencyMap(image, 0.3)().image()
+# sobel = SobelFilter(img_gray)().image()
 
 # print(result, saliency)
 
-energy = result - saliency * 255
+# energy = result - saliency * 255
 
-Plotter.images([saliency, result, energy], 1, 3)
+# Plotter.images([saliency, result, energy], 1, 3)
 
 
 @Decorators.Loggers.log_method_time
-def fun():
+def grab_cut_energy(img, gray):
     bgdModel = np.zeros((1, 65), np.float64)
     fgdModel = np.zeros((1, 65), np.float64)
 
-    # mask = SaliencyMap(image, 0.8)().image()
-    mask = CannyProcessor(image)().image()
+    mask = SobelFilter(gray)().image()
 
-    temp = mask
-
-    rect = (0, 0, width // 2, height)
+    rect = (0, 0, width - 1, height - 1)
     cv2.grabCut(img_rgb, mask, rect, bgdModel, fgdModel, 5, cv2.GC_INIT_WITH_RECT)
-
-    # Plotter.image(mask)
 
     mask2 = np.where((mask == 2) | (mask == 0), 0, 1).astype('uint8')
 
-    # Plotter.images([temp, mask, mask2], 1, 3)
+    # Plotter.image(mask2)
 
-    mask3 = SaliencyMap(image)().image()
+    mask3 = SaliencyMap(img)().image()
 
-    print(mask2)
-    print(mask3)
+    Plotter.images([mask, mask2, mask3], 1, 3)
 
-    # img = img_rgb * mask2[:, :, np.newaxis]
-    img = mask2 + mask3
-
-    print("max", np.max(mask2))
+    img = mask2 + mask3 * 255.0
 
     return img
 
 
-# energy = fun()
-#
+energy = grab_cut_energy(image, img_gray)
+
 # Plotter.image(energy)
-#
-# backward = ConnectedSC(img_rgb, energy, 0.75)()
-# forward = ForwardSC(img_rgb, energy, 0.75)()
-#
-# Plotter.images([img_rgb, backward, forward], 1, 3)
+
+backward = ConnectedSC(img_rgb, energy, 0.75)()
+forward = ForwardSC(img_rgb, energy, 0.75)()
+
+Plotter.images([img_rgb, energy, backward, forward], 2, 2)
