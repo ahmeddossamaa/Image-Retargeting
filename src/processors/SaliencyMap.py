@@ -9,7 +9,7 @@ from cv2.saliency import StaticSaliencyFineGrained
 
 
 class SaliencyMap(Processor):
-    def __init__(self, image, ts=None):
+    def __init__(self, image: Image, ts=None):
         self.ts = ts
 
         super(SaliencyMap, self).__init__(image)

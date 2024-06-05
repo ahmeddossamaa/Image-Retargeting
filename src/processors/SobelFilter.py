@@ -2,14 +2,15 @@ import numpy as np
 
 from cv2 import normalize, CV_64F, Sobel, NORM_MINMAX, CV_8U, GaussianBlur
 from config.decorators import Decorators
+from utils.Image import Image
 from utils.Processor import Processor
 
 
 class SobelFilter(Processor):
-    def __init__(self, image, blur=False, ksize=3):
+    def __init__(self, image: Image, blur=False, ksize=3):
         self._blur = blur
         self._ksize = ksize
-        super(SobelFilter, self).__init__(image)
+        super(SobelFilter, self).__init__(image.gray())
 
     @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):

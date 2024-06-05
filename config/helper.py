@@ -38,3 +38,21 @@ class Helper:
         @staticmethod
         def scale(x, start=0.0, end=255.0):
             return (x - start) / (end - start)
+
+        @staticmethod
+        def get_min(matrix, j, k, start, end):
+            l = max(k - 1, start)
+            r = min(k + 1, end)
+
+            left = matrix[j][l]
+            mid = matrix[j][k]
+            right = matrix[j][r]
+
+            if left <= mid and left <= right:
+                temp = left, l
+            elif mid <= left and mid <= right:
+                temp = mid, k
+            else:
+                temp = right, r
+
+            return temp

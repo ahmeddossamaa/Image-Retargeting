@@ -33,6 +33,8 @@ class Plotter:
         if off:
             return
 
+        assert len(images) <= size[0] * size[1], "Number of images is more than number of slots."
+
         figure = plt.figure(figsize=size)
 
         for i, img in enumerate(images):
