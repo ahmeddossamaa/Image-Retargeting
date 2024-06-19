@@ -11,6 +11,7 @@ from utils.Image import Image
 cat = "ball"
 ratio = 0.75
 
+
 def extract_frames(video_path):
     cap = VideoCapture(video_path)
 
@@ -45,7 +46,7 @@ def drop_some_frames(input_video_path, output_video_path, skip_every_n_frame=10)
 
         frame_count += 1
 
-        print(frame_count)
+        # print(frame_count)
 
         if frame_count % skip_every_n_frame == 0:
             continue
@@ -58,7 +59,7 @@ def drop_some_frames(input_video_path, output_video_path, skip_every_n_frame=10)
 
         out.write(result)
 
-        if frame_count == 25:
+        if frame_count == 50:
             break
 
     cap.release()

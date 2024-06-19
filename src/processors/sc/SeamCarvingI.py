@@ -13,7 +13,8 @@ class SeamCarvingI:
     def __init__(self,
                  image: Image,
                  ratio: float,
-                 converter: type = None):
+                 converter: type = None,
+                 feature_map: np.array = None):
 
         self._origin = image
         self._image = image.rgb()
@@ -25,6 +26,7 @@ class SeamCarvingI:
         self._ratio = ratio
 
         self._converter = converter
+        self._feature_map = feature_map
 
         self._num_seams = int(self._width - self._width * self._ratio)
 
@@ -36,6 +38,9 @@ class SeamCarvingI:
     """
 
     def _convert(self):
+        if self._feature_map is not None:
+            return self._feature_map
+
         if not self._converter:
             return self._origin.gray()
 

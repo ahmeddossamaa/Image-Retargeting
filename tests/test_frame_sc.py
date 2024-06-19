@@ -11,11 +11,19 @@ from utils.Image import Image
 
 if __name__ == '__main__':
     name = "frames/ball/50.jpg"
-    # name = "img_6.png"
+    # name = "img_4.png"
 
-    img = Image(f"{DataPath.OUTPUT_PATH.value}/{name}")
+    path = f"{DataPath.INPUT_PATH.value}/man1"
+
+    img = Image(f"{path}/rgb.jpg")
+    depth = Image(f"{path}/gt.jpg")()
 
     rgb = img.rgb()
+
+    # print(depth.shape)
+
+    # Plotter.images([rgb, depth], 1, 2)
+
     # gray = img.gray()
     #
     # saliency = SaliencyMap(img)().image()
@@ -23,10 +31,10 @@ if __name__ == '__main__':
 
     # energy = np.maximum(sobel / 255, saliency)
 
-    energy = Combiner(img)().image()
+    energy = Combiner(img, depth=depth)().image()
 
-    result = ImprovedSC(img, 0.75, converter=Combiner)()
+    result = ImprovedSC(img, 0.750, converter=Combiner, feature_map=energy)()
 
     # result = MiddleSC(rgb, energy, 0.75)()
 
-    Plotter.images([rgb, energy, result], 1, 3)
+    Plotter.images([rgb, result], 1, 2)
