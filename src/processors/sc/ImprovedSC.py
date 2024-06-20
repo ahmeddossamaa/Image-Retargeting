@@ -77,11 +77,12 @@ class ImprovedSC(SeamCarvingI):
 
                 old_matrix[j, i] = np.inf
 
-        dh, dw = abs(e - s) + 1, abs(self._width - self._num_seams)
+        dh, dw = abs(e - s), abs(self._width - self._num_seams)
 
         # Plotter.images([old_matrix, self._energy], 1, 2)
 
         new_image = np.zeros((dh, dw, 3))
+        # new_image = []
         for j in range(s, e, step):
             arr = []
             penalty = 0
@@ -101,29 +102,9 @@ class ImprovedSC(SeamCarvingI):
                 arr.append(old_image[j, i])
 
             new_image[j % self._mid] = arr
+            # new_image.append(arr)
 
         return new_image
-
-    def remove_seam(self, middle, s, e, step):
-        old_image = self._image
-        old_matrix = self._matrix
-
-        new_image = [[] for i in range(self._height)]
-        new_matrix = [[] for i in range(self._height)]
-
-        for k in range(self._num_seams):
-            i = middle[k]
-
-            for j in range(s, e, step):
-                v, i = Helper.Math.get_min(old_matrix, j, i, 0, len(old_matrix[j]) - 1)
-
-                new_image[j] = np.delete(old_image[j], i, axis=0)
-                new_matrix[j] = np.delete(old_matrix[j], i, axis=0)
-
-            old_image = new_image
-            old_matrix = new_matrix
-
-        return np.array(new_image[s: e] if e > s else new_image[e: s])
 
     @Decorators.Loggers.log_class_method_time
     def _remove(self, energy):
@@ -137,7 +118,7 @@ class ImprovedSC(SeamCarvingI):
         #     exe.submit(self.bottomup, middle, self._mid - 1, 0, -1)
         #     exe.submit(self.bottomup, middle, self._mid, self._height - 1, 1)
 
-        self._image[:self._mid, :dw] = self.remove_seam(middle, self._mid - 1, 0, -1)
-        self._image[self._mid:, :dw] = self.remove_seam(middle, self._mid, self._height - 1, 1)
+        self._image[:self._mid, :dw] = self.bottomup(middle, self._mid - 1, -1, -1)
+        self._image[self._mid:, :dw] = self.bottomup(middle, self._mid, self._height, 1)
 
         return self._image[:, :dw]

@@ -10,31 +10,20 @@ from src.processors.sc.MiddleSC import MiddleSC
 from utils.Image import Image
 
 if __name__ == '__main__':
-    name = "frames/ball/50.jpg"
+    # name = "frames/ball/50.jpg"
     # name = "img_4.png"
 
-    path = f"{DataPath.INPUT_PATH.value}/man1"
+    path = f"{DataPath.INPUT_PATH.value}/turtle"
 
     img = Image(f"{path}/rgb.jpg")
-    depth = Image(f"{path}/gt.jpg")()
-
     rgb = img.rgb()
 
-    # print(depth.shape)
-
-    # Plotter.images([rgb, depth], 1, 2)
-
-    # gray = img.gray()
-    #
-    # saliency = SaliencyMap(img)().image()
-    # sobel = SobelFilter(gray)().image()
-
-    # energy = np.maximum(sobel / 255, saliency)
+    depth = Image(f"{path}/gt.jpg")()
 
     energy = Combiner(img, depth=depth)().image()
 
-    result = ImprovedSC(img, 0.750, converter=Combiner, feature_map=energy)()
+    # result = ImprovedSC(img, 0.750, converter=Combiner, feature_map=energy)()
 
-    # result = MiddleSC(rgb, energy, 0.75)()
+    result = MiddleSC(rgb, energy, 0.75)()
 
     Plotter.images([rgb, result], 1, 2)

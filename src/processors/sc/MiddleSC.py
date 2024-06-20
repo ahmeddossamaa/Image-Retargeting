@@ -30,8 +30,7 @@ class MiddleSC(SeamCarving):
 
         new_image = []
 
-        @Decorators.Loggers.log_method_time
-        def accumulate(s, e, step):
+        def backward(s, e, step):
             for j in range(s, e, step):
                 for i in range(0, width):
                     idx = j - 1 if step == 1 else j + 1
@@ -47,6 +46,29 @@ class MiddleSC(SeamCarving):
                     v = v + energy[j, i]
 
                     matrix[j][i] = v
+
+        @Decorators.Loggers.log_method_time
+        def accumulate(s, e, step):
+            for j in range(s, e, step):
+                for i in range(width):
+                    if j == s:
+                        matrix[j, i] = self._energy[j, i]
+                    else:
+                        left_bound = max(i - 1, 0)
+                        right_bound = min(i + 1, width - 1)
+
+                        cu_val = abs(self._energy[j - step, right_bound] - self._energy[j, left_bound])
+
+                        cl_val = abs(self._energy[j - step, i] - self._energy[j, left_bound]) + cu_val
+                        cr_val = abs(self._energy[j - step, i] - self._energy[j, right_bound]) + cu_val
+
+                        # print(cl_val, cu_val, cr_val)
+
+                        matrix[j, i] = self._energy[j, i] + min(
+                            cl_val + matrix[j - step, left_bound],
+                            cu_val + matrix[j - step, i],
+                            cr_val + matrix[j - step, right_bound],
+                        )
 
         @Decorators.Loggers.log_method_time
         def execute():
