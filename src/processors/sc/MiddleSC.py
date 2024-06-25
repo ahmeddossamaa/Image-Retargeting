@@ -72,15 +72,15 @@ class MiddleSC(SeamCarving):
 
         @Decorators.Loggers.log_method_time
         def execute():
-            # accumulate(0, mid, 1)
-            # accumulate(height - 1, mid - 1, -1)
+            accumulate(0, mid, 1)
+            accumulate(height - 1, mid - 1, -1)
 
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                # executor.submit(accumulate, mid, height + 1, 1)
-                # executor.submit(accumulate, mid - 1, - 1, -1)
-
-                executor.submit(accumulate, 0, mid, 1)
-                executor.submit(accumulate, height - 1, mid - 1, -1)
+            # with concurrent.futures.ThreadPoolExecutor() as executor:
+            #     # executor.submit(accumulate, mid, height + 1, 1)
+            #     # executor.submit(accumulate, mid - 1, - 1, -1)
+            #
+            #     executor.submit(accumulate, 0, mid, 1)
+            #     executor.submit(accumulate, height - 1, mid - 1, -1)
 
         execute()
 
@@ -116,6 +116,16 @@ class MiddleSC(SeamCarving):
                     image[j][i] = [0, 255, 0]
                     new_image[j] = image[j]
 
+                    # t1 = Thread(target=remove_seam, args=(i, 0, mid, 1))
+                    # t2 = Thread(target=remove_seam, args=(i, height - 1, mid - 1, -1))
+
+                    # t1 = Thread(target=remove_seam, args=(i, mid - 1, -1, -1))
+                    # t2 = Thread(target=remove_seam, args=(i, mid, height, 1))
+                    #
+                    # t1.start()
+                    # t2.start()
+                    #
+                    # t1.join()
                     matrix[j][i] = math.inf
                     new_matrix[j] = matrix[j]
                 else:
@@ -129,17 +139,6 @@ class MiddleSC(SeamCarving):
 
             remove_seam(i, mid - 1, -1, -1)
             remove_seam(i, mid, height, 1)
-
-            # t1 = Thread(target=remove_seam, args=(i, 0, mid, 1))
-            # t2 = Thread(target=remove_seam, args=(i, height - 1, mid - 1, -1))
-
-            # t1 = Thread(target=remove_seam, args=(i, mid - 1, -1, -1))
-            # t2 = Thread(target=remove_seam, args=(i, mid, height, 1))
-            #
-            # t1.start()
-            # t2.start()
-            #
-            # t1.join()
             # t2.join()
 
             image = new_image

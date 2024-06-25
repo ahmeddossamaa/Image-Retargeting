@@ -23,17 +23,28 @@ class ForwardSC(SeamCarving):
 
         matrix = np.zeros((height, width))
 
+        s = 0
+        step = 1
         for j in range(0, height):
             for i in range(0, width):
-                v = min(
-                    matrix[j - 1][max(i - 1, 0)],
-                    matrix[j - 1][i],
-                    matrix[j - 1][min(i + 1, len(matrix[0]) - 1)]
-                ) if j - 1 > 0 else 0
+                if j == s:
+                    matrix[j, i] = self._energy[j, i]
+                else:
+                    left_bound = max(i - 1, 0)
+                    right_bound = min(i + 1, width - 1)
 
-                v = v + energy[j, i]
+                    cu_val = abs(self._energy[j - step, right_bound] - self._energy[j, left_bound])
 
-                matrix[j][i] = v
+                    cl_val = abs(self._energy[j - step, i] - self._energy[j, left_bound]) + cu_val
+                    cr_val = abs(self._energy[j - step, i] - self._energy[j, right_bound]) + cu_val
+
+                    # print(cl_val, cu_val, cr_val)
+
+                    matrix[j, i] = self._energy[j, i] + min(
+                        cl_val + matrix[j - step, left_bound],
+                        cu_val + matrix[j - step, i],
+                        cr_val + matrix[j - step, right_bound],
+                    )
 
         Plotter.image(matrix, off=True)
 
@@ -60,7 +71,7 @@ class ForwardSC(SeamCarving):
             row = matrix[0]
             i = np.argmin(row)
 
-            for j in range(0, height, 1):
+            for j in range(height - 1, -1, -1):
                 start = 0
                 end = len(matrix[j]) - 1
 
