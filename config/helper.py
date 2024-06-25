@@ -23,6 +23,19 @@ class Helper:
 
             return stream.getvalue()
 
+        @staticmethod
+        def normalize_map(input_map):
+            min_val = np.min(input_map)
+            max_val = np.max(input_map)
+
+            # Prevent division by zero in case all values are the same
+            if min_val == max_val:
+                return np.zeros_like(input_map)
+
+            normalized_map = (input_map - min_val) / (max_val - min_val)
+
+            return normalized_map
+
     class Lists:
         @staticmethod
         def sort_with_indices(lst):
@@ -38,3 +51,21 @@ class Helper:
         @staticmethod
         def scale(x, start=0.0, end=255.0):
             return (x - start) / (end - start)
+
+        @staticmethod
+        def get_min(matrix, j, k, start, end):
+            l = max(k - 1, start)
+            r = min(k + 1, end)
+
+            left = matrix[j][l]
+            mid = matrix[j][k]
+            right = matrix[j][r]
+
+            if left <= mid and left <= right:
+                temp = left, l
+            elif mid <= left and mid <= right:
+                temp = mid, k
+            else:
+                temp = right, r
+
+            return temp

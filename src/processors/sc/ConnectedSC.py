@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import cupy as cp
 
 from config.decorators import Decorators
 from config.helper import Helper
@@ -16,15 +17,13 @@ class ConnectedSC(SeamCarving):
     @Decorators.Loggers.log_class_method_time
     def _main(self, *args, **kwargs):
         image = self._img
-        energy = self._energy
 
+        energy = self._energy
         height, width, z = image.shape
 
         w = int(width - width * self._ratio)
 
         matrix = np.zeros((height, width))
-
-        new_image = []
 
         index = -1
         for j in range(0, height):
@@ -44,41 +43,45 @@ class ConnectedSC(SeamCarving):
 
         Plotter.image(matrix, off=True)
 
-        for k in range(w):
-            new_image = []
-            new_matrix = []
+        def get_min(j, k, start, end):
+            l = max(k - 1, start)
+            r = min(k + 1, end)
 
+            left = matrix[j][l]
+            mid = matrix[j][k]
+            right = matrix[j][r]
+
+            if left <= mid and left <= right:
+                temp = left, l
+            elif mid <= left and mid <= right:
+                temp = mid, k
+            else:
+                temp = right, r
+
+            return temp
+
+        new_image = [[] for i in range(height)]
+        new_matrix = [[] for i in range(height)]
+        for k in range(w):
             row = matrix[index]
             i = np.argmin(row)
 
             for j in range(height - 1, -1, -1):
-                start = max(0, i - 1)
-                end = min(i + 2, len(matrix[j - 1]) - 1)
+                start = 0
+                end = len(matrix[j]) - 1
 
-                i = np.argmin(
-                    matrix[j - 1][
-                        start: end
-                    ]
-                ) + start
+                v, i = get_min(j, i, start, end)
 
                 if self._color:
                     image[j][i] = [0, 255, 0]
-                    new_image.append(
-                        image[j]
-                    )
+                    new_image[j] = image[j]
 
                     matrix[j][i] = math.inf
-                    new_matrix.append(
-                        matrix[j]
-                    )
+                    new_matrix[j] = matrix[j]
                 else:
-                    new_image.append(
-                        np.delete(image[j], i, axis=0)
-                    )
+                    new_image[j] = np.delete(image[j], i, axis=0)
 
-                    new_matrix.append(
-                        np.delete(matrix[j], i, axis=0)
-                    )
+                    new_matrix[j] = np.delete(matrix[j], i, axis=0)
 
             image = new_image
             matrix = new_matrix

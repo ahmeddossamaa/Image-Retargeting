@@ -1,8 +1,10 @@
 from abc import abstractmethod
 
+from utils.Image import Image
+
 
 class Processor:
-    def __init__(self, image):
+    def __init__(self, image: Image):
         self._image = image
         self._origin = image.copy()
 

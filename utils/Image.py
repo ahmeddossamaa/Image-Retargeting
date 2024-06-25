@@ -1,6 +1,6 @@
 import numpy as np
 from cv2 import imread, IMREAD_GRAYSCALE, IMREAD_UNCHANGED, imwrite, imdecode, IMREAD_COLOR, COLOR_BGR2RGB, cvtColor, \
-    COLOR_BGR2GRAY, COLOR_RGB2BGR, COLOR_BGR2LAB, split
+    COLOR_BGR2GRAY, COLOR_RGB2BGR, COLOR_BGR2LAB, split, COLOR_RGB2GRAY
 
 from config.constants import DataPath
 from config.decorators import Decorators
@@ -19,14 +19,15 @@ class Image:
 
     @Decorators.Loggers.log_class_method_time
     def __read(self):
-        try:
-            return imread(
-                self.__file,
-                Image._get_color(self.__gray)
-            )
-        except Exception as e:
-            print(e)
-            return None
+        img = imread(
+            self.__file,
+            Image._get_color(self.__gray)
+        )
+
+        if img is None:
+            raise ValueError(f"Image {self.__file} not found")
+
+        return img
 
     @Decorators.Loggers.log_class_method_time
     def __decode(self):
@@ -52,7 +53,7 @@ class Image:
     @Decorators.Loggers.log_class_method_time
     def save(image, name):
         try:
-            imwrite(f"{DataPath.OUTPUT_PATH.value}/{name}", image)
+            imwrite(name, cvtColor(image, COLOR_BGR2RGB))
         except Exception as e:
             print(e)
 

@@ -6,7 +6,7 @@ from utils.Image import Image
 
 PATH = DataPath.INPUT_PATH.value
 
-name = "img_3.png"
+name = "img_7.png"
 
 image = Image(f"{PATH}/{name}")
 
@@ -20,8 +20,10 @@ image_rgb = image.rgb()
 
 saliency_map = SaliencyMap(image)().image()
 
-# Plotter.image(saliency_map)
+Plotter.image(saliency_map)
 
-result = ConnectedSC(image_rgb, saliency_map, 0.50, color=False)()
+Image.save(saliency_map, name)
 
-Plotter.images([image_rgb, saliency_map, result], 1, 3)
+# result = ConnectedSC(image_rgb, saliency_map, 0.50, color=False)()
+#
+# Plotter.images([image_rgb, saliency_map, result], 1, 3)

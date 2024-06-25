@@ -90,6 +90,7 @@ def extract_and_compare_features_SIFT(image1, image2):
     if percent >= 75.00:
         print('Match Found')
     img3 = cv2.drawMatchesKnn(image1, kp1, image2, kp2, matches[:20], None, flags=2)
+    return percent
     #plt.imshow(img3), plt.show()
 
 def compute_psnr(image1_path, image2_path):
@@ -108,18 +109,24 @@ def compute_psnr(image1_path, image2_path):
     return psnr_value
 
 
-image1_path = (f"{DataPath.INPUT_PATH.value}/img_4.png")
-image2_path = (f"{DataPath.OUTPUT_PATH.value}/test.png")
+image1_path = (f"{DataPath.INPUT_PATH.value}/bicycle2.png-orginal.png")
+image2_path = (f"{DataPath.OUTPUT_PATH.value}/bicycle2.pngSCBuilt-in.png")
 content_loss = calculate_content_loss(image1_path, image2_path)
 print("Content loss between the two images:", content_loss.numpy())
 
-image1 = Image(f"{DataPath.INPUT_PATH.value}/img_4.png")()
-image2 = Image(f"{DataPath.OUTPUT_PATH.value}/test.png")()
+image1 = Image(f"{DataPath.INPUT_PATH.value}/bicycle2.png-orginal.png")()
+image2 = Image(f"{DataPath.OUTPUT_PATH.value}/bicycle2.pngSCBuilt-in.png")()
 
 distance = compute_and_compare_edge_histograms(image1, image2)
 print("edge_histograms between the two images:", distance )
 
-extract_and_compare_features_SIFT(image1, image2)
+similarity_score = extract_and_compare_features_SIFT(image1, image2)
 
 psnr_value = compute_psnr(image1_path, image2_path)
 print("PSNR between the two images:", psnr_value)
+
+# print("similarity_score", similarity_score)
+
+composite_score = 0.4*(1/content_loss) + 0.3 * similarity_score + 0.2 * (1/distance)
+
+print("composite score of the image" , composite_score.numpy())
