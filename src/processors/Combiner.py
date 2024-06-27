@@ -8,14 +8,21 @@ from utils.Processor import Processor
 
 
 class Combiner(Processor):
-    def __init__(self, image: Image, depth=None):
+    def __init__(self, image: Image, depth=None, invert=False):
         self._depth = depth
+        self._invert = invert
 
         super(Combiner, self).__init__(image)
 
     @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
-        saliency = self._depth / 255 if self._depth is not None else SaliencyMap(self._image, ts=0.3)().image()
+        if self._depth is not None:
+            if self._invert:
+                self._depth = 255 - self._depth
+
+            saliency = self._depth / 255
+        else:
+            saliency = SaliencyMap(self._image, ts=0.3)().image()
         sobel = SobelFilter(self._image)().image()
 
         energy = np.maximum(sobel / 255, saliency)

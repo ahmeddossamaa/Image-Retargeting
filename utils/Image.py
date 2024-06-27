@@ -25,7 +25,7 @@ class Image:
         )
 
         if img is None:
-            raise ValueError("Image not found")
+            raise ValueError(f"Image {self.__file} not found")
 
         return img
 
@@ -53,7 +53,7 @@ class Image:
     @Decorators.Loggers.log_class_method_time
     def save(image, name):
         try:
-            imwrite(f"{DataPath.OUTPUT_PATH.value}/{name}", cvtColor(image, COLOR_BGR2RGB))
+            imwrite(name, cvtColor(image, COLOR_BGR2RGB))
         except Exception as e:
             print(e)
 
@@ -63,7 +63,6 @@ class Image:
 
     @Decorators.Loggers.log_class_method_time
     def gray(self):
-        print(self.__img)
         return cvtColor(self.__img, COLOR_BGR2GRAY)
 
     @Decorators.Loggers.log_class_method_time
