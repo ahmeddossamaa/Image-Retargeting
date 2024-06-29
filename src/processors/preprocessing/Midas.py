@@ -1,9 +1,5 @@
 import numpy as np
 import torch
-import torchvision
-from torchvision import transforms
-
-from config.constants import DataPath
 from config.decorators import Decorators
 from config.helper import Helper
 from config.plotter import Plotter
@@ -11,9 +7,17 @@ from utils.Image import Image
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-print(torch.cuda.is_available())
 
 
+print("PyTorch Version: ", torch.__version__)
+print("CUDA Version: ", torch.version.cuda)
+print("CUDA Available: ", torch.cuda.is_available())
+print("CUDA Device Count: ", torch.cuda.device_count())
+if torch.cuda.is_available():
+    print("Current CUDA Device: ", torch.cuda.current_device())
+    print("CUDA Device Name: ", torch.cuda.get_device_name(torch.cuda.current_device()))
+else:
+    print("CUDA is not available. Please check your installation.")
 def MiDaS_init():
     global device
     model_type = "DPT_Large"  # Choose the model type: "DPT_Large", "DPT_Hybrid", or "MiDaS_small"
@@ -55,8 +59,11 @@ def MiDaS_predict(image):
     return depth_pred
 
 
-img = Image(f"../../../data/input/moon.jpg")()
+img = Image(f"../../../data/input/img_10.png")()
+
+
 
 result = MiDaS_predict(img)
 
 Plotter.image(result)
+

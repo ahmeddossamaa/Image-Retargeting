@@ -2,13 +2,13 @@ import numpy as np
 
 from config.constants import DataPath
 from config.plotter import Plotter
-from src.processors.Combiner import Combiner
+# from src.processors.Combiner import Combiner
 from src.processors.sc.ImprovedSC import ImprovedSC
-from src.processors.SaliencyMap import SaliencyMap
-from src.processors.SobelFilter import SobelFilter
-from src.processors.sc.ConnectedSC import ConnectedSC
-from src.processors.sc.ForwardSC import ForwardSC
-from src.processors.sc.MiddleSC import MiddleSC
+# from src.processors.SaliencyMap import SaliencyMap
+# from src.processors.SobelFilter import SobelFilter
+# from src.processors.sc.ConnectedSC import ConnectedSC
+# from src.processors.sc.ForwardSC import ForwardSC
+# from src.processors.sc.MiddleSC import MiddleSC
 from utils.Image import Image
 
 if __name__ == '__main__':
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     # depth = Image(f"{path}/depth.jpg")()
 
-    energy = Combiner(img)().image()
+    # energy = Combiner(img)().image()
 
     # Plotter.images([energy], 1, 1)
 

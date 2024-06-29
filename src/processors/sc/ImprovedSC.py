@@ -7,7 +7,6 @@ from config.decorators import Decorators
 from config.helper import Helper
 from config.plotter import Plotter
 from src.processors.sc.SeamCarvingI import SeamCarvingI
-import cupy as cp
 
 
 class ImprovedSC(SeamCarvingI):
