@@ -3,9 +3,11 @@ from cv2 import VideoCapture, VideoWriter, CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, C
     COLOR_BGR2GRAY
 
 from config.constants import DataPath
+from src.processors.Combiner import Combiner
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.MiddleSC import MiddleSC
+from src.processors.sc.MiddleSCI import MiddleSCI
 from utils.Image import Image
 
 cat = "ball"
@@ -38,6 +40,8 @@ def drop_some_frames(input_video_path, output_video_path, skip_every_n_frame=10)
 
     out = VideoWriter(output_video_path, fourcc, fps, (width, height))
 
+    last = None
+
     frame_count = 0
     while cap.isOpened():
         ret, frame = cap.read()
@@ -51,15 +55,24 @@ def drop_some_frames(input_video_path, output_video_path, skip_every_n_frame=10)
         if frame_count % skip_every_n_frame == 0:
             continue
 
-        gray = cvtColor(frame, COLOR_BGR2GRAY)
+        img = Image("", data=frame)
 
-        energy = SobelFilter(gray)().image()
+        # energy = Combiner(img)().image()
 
-        result = MiddleSC(frame, energy, 0.75)()
+        # if last is not None:
+        #     energy = (energy + last) / 2
+        #
+        # last = energy
+
+        sc = MiddleSCI(img, 0.75, converter=Combiner, prev_matrix=last)
+
+        result = sc()
+
+        last = sc.get_matrix()
 
         out.write(result)
 
-        if frame_count == 50:
+        if frame_count == 31:
             break
 
     cap.release()
@@ -69,7 +82,7 @@ def drop_some_frames(input_video_path, output_video_path, skip_every_n_frame=10)
 # extract_frames(f"{DataPath.INPUT_PATH.value}/videos/{cat}.mp4")
 
 drop_some_frames(
-    f"{DataPath.INPUT_PATH.value}/videos/{cat}.mp4",
-    f"{DataPath.INPUT_PATH.value}/videos/{cat}_retargeted.mp4",
+    f"../{DataPath.INPUT_PATH.value}/videos/{cat}.mp4",
+    f"../{DataPath.INPUT_PATH.value}/videos/{cat}_retargeted_2.mp4",
     skip_every_n_frame=3
 )

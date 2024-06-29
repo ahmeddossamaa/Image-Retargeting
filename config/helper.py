@@ -35,6 +35,64 @@ class Helper:
             normalized_map = (input_map - min_val) / (max_val - min_val)
 
             return normalized_map
+        
+        @staticmethod
+        def forward_energy(matrix, energy, width, j, i, step):
+            left_bound = max(i - 1, 0)
+            right_bound = min(i + 1, width - 1)
+
+            cu_val = abs(energy[j - step, right_bound] - energy[j, left_bound])
+
+            cl_val = abs(energy[j - step, i] - energy[j, left_bound]) + cu_val
+            cr_val = abs(energy[j - step, i] - energy[j, right_bound]) + cu_val
+
+            return min(
+                cl_val + matrix[j - step, left_bound],
+                cu_val + matrix[j - step, i],
+                cr_val + matrix[j - step, right_bound],
+            )
+        
+        @staticmethod
+        def forward_energy_3d(matrix, matrix_old, energy, width, j, i, step):
+            left_bound = max(i - 1, 0)
+            right_bound = min(i + 1, width - 1)
+
+            A = energy[j - step, left_bound]
+            B = energy[j - step, i]
+            C = energy[j - step, right_bound]
+            D = energy[j, left_bound]
+            F = energy[j, right_bound]
+
+            # a = matrix_old[j - step, left_bound]
+            b = matrix_old[j - step, i]
+            e = matrix_old[j, i]
+
+            # Cb = abs(C - b)
+
+            Fe = abs(F - e)
+            FD = DF = abs(F - D)
+
+            De = abs(D - e)
+
+            # r = Fe + FD
+
+            # cl = r + Cb + abs(B - D) + abs(B - a)
+            # cu = r + Cb + abs(A - C)
+            # cr = r + abs(B - F)
+
+            cl = DF + abs(D - B) + De
+
+            t1 = abs(A - b) + De
+            t2 = abs(C - b) + Fe
+
+            cm = abs(A - C) + FD + ((t1 + t2) / 2)
+            cr = FD + abs(F - B) + abs(F - e)
+
+            return min(
+                cl + matrix[j - step, left_bound],
+                cm + matrix[j - step, i],
+                cr + matrix[j - step, right_bound],
+            )
 
     class Lists:
         @staticmethod

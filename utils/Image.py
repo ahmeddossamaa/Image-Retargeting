@@ -8,28 +8,29 @@ from config.helper import Helper
 
 
 class Image:
-    def __init__(self, file, gray=False, decode=False):
+    def __init__(self, file, gray=False, decode=False, data=None):
         self.__file = file
         self.__gray = gray
+        self.__data = data
 
         self.__img = self.__read() if not decode else self.__decode()
 
     def __call__(self, *args, **kwargs):
         return self.__img.copy()
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def __read(self):
         img = imread(
             self.__file,
             Image._get_color(self.__gray)
-        )
+        ) if self.__data is None else self.__data
 
         if img is None:
             raise ValueError(f"Image {self.__file} not found")
 
         return img
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def __decode(self):
         try:
             return imdecode(
@@ -40,32 +41,32 @@ class Image:
             print(e)
             return None
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def copy(self):
         return self.__img.copy()
 
     @staticmethod
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def split(image):
         return split(image)
 
     @staticmethod
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def save(image, name):
         try:
             imwrite(name, cvtColor(image, COLOR_BGR2RGB))
         except Exception as e:
             print(e)
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def rgb(self):
         return cvtColor(self.__img, COLOR_BGR2RGB)
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def gray(self):
         return cvtColor(self.__img, COLOR_BGR2GRAY)
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def lab(self):
         return cvtColor(self.__img, COLOR_BGR2LAB)
 

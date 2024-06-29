@@ -55,8 +55,8 @@ def MiDaS_predict(image):
     return depth_pred
 
 
-img = Image(f"../../../data/input/moon.jpg")()
+# img = Image(f"../../../data/input/moon.jpg")()
 
-result = MiDaS_predict(img)
+# result = MiDaS_predict(img)
 
-Plotter.image(result)
+# Plotter.image(result)
