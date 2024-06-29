@@ -37,14 +37,14 @@ class SeamCarvingI:
     Output: 2D Feature Map
     """
 
-    def _convert(self):
+    def convert(self, origin):
         if self._feature_map is not None:
             return self._feature_map
 
         if not self._converter:
-            return self._origin.gray()
+            return origin.gray()
 
-        return self._converter(self._origin)().image()
+        return self._converter(origin)().image()
 
     """
     Extract energy map by top down accumulation
@@ -54,7 +54,7 @@ class SeamCarvingI:
     """
 
     @abstractmethod
-    def _accumulate(self, energy):
+    def accumulate(self, energy):
         return []
 
     """
@@ -65,7 +65,7 @@ class SeamCarvingI:
     """
 
     @abstractmethod
-    def _remove(self, energy):
+    def remove(self, energy):
         return []
 
     """
@@ -74,8 +74,8 @@ class SeamCarvingI:
 
     @Decorators.Loggers.log_class_method_time
     def execute(self):
-        energy = self._convert()
-        energy = self._accumulate(energy)
-        result = self._remove(energy)
+        energy = self.convert(self._origin)
+        energy = self.accumulate(energy)
+        result = self.remove(energy)
 
         return np.array(result)

@@ -19,7 +19,7 @@ class Main:
         return Main()
 
     def run(self):
-        self.__app.run(host="192.168.1.11")
+        self.__app.run()
 
 
 if __name__ == "__main__":

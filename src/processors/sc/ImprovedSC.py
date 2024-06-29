@@ -42,7 +42,7 @@ class ImprovedSC(SeamCarvingI):
                     )
 
     @Decorators.Loggers.log_class_method_time
-    def _accumulate(self, energy):
+    def accumulate(self, energy):
         self._energy = energy
 
         self._mid = self._height // 2
@@ -103,15 +103,20 @@ class ImprovedSC(SeamCarvingI):
 
         return new_image
 
-    def remove_seam(self, middle, s, e, step):
-        old_image = self._image
-        old_matrix = self._matrix
+    def remove_seam(self, indices, s, e, step):
+        print(s, e)
+
+        old_image = self._image.copy()
+        old_matrix = self._matrix.copy()
 
         new_image = [[] for i in range(self._height)]
         new_matrix = [[] for i in range(self._height)]
 
         for k in range(self._num_seams):
-            i = middle[k]
+            # i = middle[k]
+            i = np.argmin(indices)
+
+            indices = np.delete(indices, i, axis=0)
 
             for j in range(s, e, step):
                 v, i = Helper.Math.get_min(old_matrix, j, i, 0, len(old_matrix[j]) - 1)
@@ -119,24 +124,26 @@ class ImprovedSC(SeamCarvingI):
                 new_image[j] = np.delete(old_image[j], i, axis=0)
                 new_matrix[j] = np.delete(old_matrix[j], i, axis=0)
 
-            old_image = new_image
-            old_matrix = new_matrix
+            old_image = new_image.copy()
+            old_matrix = new_matrix.copy()
 
-        return np.array(new_image[s: e] if e > s else new_image[e: s])
+        return np.array(new_image[s: e] if e > s else new_image[e + 1: s + 1])
 
     @Decorators.Loggers.log_class_method_time
-    def _remove(self, energy):
+    def remove(self, energy):
         dw = self._width - self._num_seams
 
-        middle = np.argsort(
-            self._matrix[self._mid - 1] + self._matrix[self._mid]
-        )
+        # middle = np.argsort(
+        #     self._matrix[self._mid - 1] + self._matrix[self._mid]
+        # )
+
+        middle = self._matrix[self._mid - 1] + self._matrix[self._mid]
 
         # with ThreadPoolExecutor() as exe:
         #     exe.submit(self.bottomup, middle, self._mid - 1, 0, -1)
         #     exe.submit(self.bottomup, middle, self._mid, self._height - 1, 1)
 
-        self._image[:self._mid, :dw] = self.bottomup(middle, self._mid - 1, 0, -1)
-        self._image[self._mid:, :dw] = self.bottomup(middle, self._mid, self._height - 1, 1)
+        self._image[:self._mid, :dw] = self.remove_seam(middle, self._mid - 1, -1, -1)
+        self._image[self._mid:, :dw] = self.remove_seam(middle, self._mid, self._height, 1)
 
         return self._image[:, :dw]

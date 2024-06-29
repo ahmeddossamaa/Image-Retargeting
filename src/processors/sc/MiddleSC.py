@@ -18,7 +18,6 @@ class MiddleSC(SeamCarving):
     @Decorators.Loggers.log_class_method_time
     def _main(self, *args, **kwargs):
         image = self._img
-        energy = self._energy
 
         height, width, z = image.shape
 
@@ -30,24 +29,6 @@ class MiddleSC(SeamCarving):
 
         new_image = []
 
-        def backward(s, e, step):
-            for j in range(s, e, step):
-                for i in range(0, width):
-                    idx = j - 1 if step == 1 else j + 1
-
-                    b = idx > s if step == 1 else idx < s
-
-                    v = min(
-                        matrix[idx][max(i - 1, 0)],
-                        matrix[idx][i],
-                        matrix[idx][min(i + 1, len(matrix[0]) - 1)]
-                    ) if b else 0
-
-                    v = v + energy[j, i]
-
-                    matrix[j][i] = v
-
-        @Decorators.Loggers.log_method_time
         def accumulate(s, e, step):
             for j in range(s, e, step):
                 for i in range(width):
@@ -62,8 +43,6 @@ class MiddleSC(SeamCarving):
                         cl_val = abs(self._energy[j - step, i] - self._energy[j, left_bound]) + cu_val
                         cr_val = abs(self._energy[j - step, i] - self._energy[j, right_bound]) + cu_val
 
-                        # print(cl_val, cu_val, cr_val)
-
                         matrix[j, i] = self._energy[j, i] + min(
                             cl_val + matrix[j - step, left_bound],
                             cu_val + matrix[j - step, i],
@@ -75,57 +54,22 @@ class MiddleSC(SeamCarving):
             accumulate(0, mid, 1)
             accumulate(height - 1, mid - 1, -1)
 
-            # with concurrent.futures.ThreadPoolExecutor() as executor:
-            #     # executor.submit(accumulate, mid, height + 1, 1)
-            #     # executor.submit(accumulate, mid - 1, - 1, -1)
-            #
-            #     executor.submit(accumulate, 0, mid, 1)
-            #     executor.submit(accumulate, height - 1, mid - 1, -1)
-
         execute()
-
-        def get_min(j, k, start, end):
-            l = max(k - 1, start)
-            r = min(k + 1, end)
-
-            left = matrix[j][l]
-            mid = matrix[j][k]
-            right = matrix[j][r]
-
-            if left <= mid and left <= right:
-                temp = left, l
-            elif mid <= left and mid <= right:
-                temp = mid, k
-            else:
-                temp = right, r
-
-            return temp
 
         new_image = [[] for i in range(height)]
         new_matrix = [[] for i in range(height)]
 
         middle = matrix[mid - 1] + matrix[mid]
 
-        # Plotter.images([energy, matrix], 1, 2)
-
+        # @Decorators.Loggers.log_method_time
         def remove_seam(i, s, e, step):
             for j in range(s, e, step):
-                v, i = get_min(j, i, 0, len(matrix[j]) - 1)
+                v, i = Helper.Math.get_min(matrix, j, i, 0, len(matrix[j]) - 1)
 
                 if self._color:
                     image[j][i] = [0, 255, 0]
                     new_image[j] = image[j]
 
-                    # t1 = Thread(target=remove_seam, args=(i, 0, mid, 1))
-                    # t2 = Thread(target=remove_seam, args=(i, height - 1, mid - 1, -1))
-
-                    # t1 = Thread(target=remove_seam, args=(i, mid - 1, -1, -1))
-                    # t2 = Thread(target=remove_seam, args=(i, mid, height, 1))
-                    #
-                    # t1.start()
-                    # t2.start()
-                    #
-                    # t1.join()
                     matrix[j][i] = math.inf
                     new_matrix[j] = matrix[j]
                 else:
