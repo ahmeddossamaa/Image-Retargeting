@@ -3,7 +3,7 @@ from cv2 import threshold, THRESH_BINARY
 from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.sc.ConnectedSC import ConnectedSC
-from utils.Image import Image
+from util.Image import Image
 
 name = "img_3.png"
 

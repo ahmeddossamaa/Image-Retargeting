@@ -5,10 +5,10 @@ from time import sleep
 from config.decorators import Decorators
 from src.processors.Combiner import Combiner
 from src.processors.sc.MiddleSC import MiddleSC
-from utils.Image import Image
-from utils.Pipeline import Pipeline
-from utils.Socket import Socket
-from utils.Worker import Worker
+from util.Image import Image
+from util.Pipeline import Pipeline
+from util.Socket import Socket
+from util.Worker import Worker
 
 
 def run(num):

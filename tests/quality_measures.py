@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from skimage.metrics import peak_signal_noise_ratio
 from skimage import io
 import os
-from utils.Image import Image
+from util.Image import Image
 from config.constants import DataPath
 
 def calculate_content_loss(image_path1, image_path2):

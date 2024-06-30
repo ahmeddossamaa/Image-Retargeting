@@ -3,7 +3,7 @@ from rembg import remove
 
 from config.constants import DataPath
 from config.plotter import Plotter
-from utils.Image import Image
+from util.Image import Image
 
 n = 5
 

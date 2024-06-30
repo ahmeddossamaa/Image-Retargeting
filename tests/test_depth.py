@@ -6,7 +6,7 @@ from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.ForwardSCV2 import ForwardSCV2
 from src.processors.sc.MiddleSC import MiddleSC
-from utils.Image import Image
+from util.Image import Image
 
 dir = f"{DataPath.INPUT_PATH.value}/depth"
 

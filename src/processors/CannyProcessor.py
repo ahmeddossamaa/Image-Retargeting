@@ -1,4 +1,4 @@
-from utils.Processor import Processor
+from util.Processor import Processor
 from cv2 import Canny
 
 

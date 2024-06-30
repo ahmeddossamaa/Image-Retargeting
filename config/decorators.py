@@ -1,7 +1,7 @@
 import time
 
-from utils.App import App
-from utils.Socket import Socket
+from util.App import App
+from util.Socket import Socket
 
 
 class Decorators:

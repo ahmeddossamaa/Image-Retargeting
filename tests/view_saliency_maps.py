@@ -3,7 +3,7 @@ from config.plotter import Plotter
 from src.processors.CannyProcessor import CannyProcessor
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
-from utils.Image import Image
+from util.Image import Image
 
 
 images = []

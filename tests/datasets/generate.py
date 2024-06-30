@@ -5,7 +5,7 @@ from src.processors.Combiner import Combiner
 from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ForwardSC import ForwardSC
 from src.processors.sc.MiddleSC import MiddleSC
-from utils.Image import Image
+from util.Image import Image
 
 path = "../../../Datasets/ReDWeb-S-Modules"
 

@@ -1,8 +1,5 @@
 import time
 
-import numpy as np
-from matplotlib import pyplot as plt
-
 from config.decorators import Decorators
 from flask import request, jsonify, Response
 from config.helper import Helper
@@ -10,9 +7,7 @@ from config.plotter import Plotter
 from src.processors.CannyProcessor import CannyProcessor
 from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.SobelFilter import SobelFilter
-from utils.Image import Image
-from PIL import Image
-import io
+from util.Image import Image
 
 
 class RetargetController:
@@ -20,41 +15,42 @@ class RetargetController:
     @Decorators.Routers.Post("/connected")
     def connected():
         try:
-            print("hello from connected")
             start_time = time.perf_counter()
 
-            img_file = request.files['image']
-            if img_file is None:
-                return jsonify({'error': 'No image file provided'}), 400
+            files = request.files
 
-            img_content = img_file.read()
+            ratio = float(request.form.get('ratio'))
 
-            img = Image.open(io.BytesIO(img_content))
+            img = files['image']
+            img_mimetype = img.mimetype
 
-            print(f"File name: {img_file.filename}")
+            img = Image(img.stream.read(), gray=False, decode=True)
 
-            img_rgb = img.convert('RGB')
-            img_gray = img.convert('L')
+            img_org = img.rgb()
+            img_rgb = img.rgb()
+            img_gray = img.gray()
 
-            ratio = float(request.form.get('ratio', 0.5))
-
+            # energy = CannyProcessor(img_gray)().image()
             energy = SobelFilter(img_gray)().image()
-            processed_img = ConnectedSC(
-                np.array(img_rgb), energy, ratio, color=False)()
 
-            Image.fromarray(processed_img.astype('uint8')).show()
+            img_rgb = ConnectedSC(img_rgb, energy, ratio)()
 
             end_time = time.perf_counter()
-            print("Processing time:", end_time - start_time)
 
-            img_mimetype = 'image/png'
-            stream = Helper.Image.get_stream(processed_img, img_mimetype)
+            # Plotter.images([img_org, img_rgb], 1, 2)
+
+            # Plotter.images([img_org, img_rgb, img_gray], 1, 3)
+
+            total_time = end_time - start_time
+
+            print(total_time)
+
+            stream = Helper.Image.get_stream(img_rgb, mimetype=img_mimetype)
 
             return Response(stream, mimetype=img_mimetype)
-
         except Exception as e:
-            print("Error:", e)
-            return jsonify({'error': str(e)}), 500
+            # print(e)
+            return jsonify(e.args)
 
     @staticmethod
     @Decorators.Routers.Post("/energy")
@@ -74,7 +70,6 @@ class RetargetController:
             Plotter.image(energy)
 
             stream = Helper.Image.get_stream(img_gray, mimetype)
-            print("hello")
 
             return Response(stream, mimetype=mimetype)
         except Exception as e:

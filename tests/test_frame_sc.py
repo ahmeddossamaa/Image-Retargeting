@@ -10,7 +10,7 @@ from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ForwardSC import ForwardSC
 from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.MiddleSCI import MiddleSCI
-from utils.Image import Image
+from util.Image import Image
 
 if __name__ == '__main__':
     # name = "frames/ball/50.jpg"

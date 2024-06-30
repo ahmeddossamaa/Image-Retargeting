@@ -7,7 +7,7 @@ from src.processors.CannyProcessor import CannyProcessor
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.MiddleSC import MiddleSC
-from utils.Image import Image
+from util.Image import Image
 
 n = 6
 

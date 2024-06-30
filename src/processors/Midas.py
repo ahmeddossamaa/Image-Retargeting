@@ -2,8 +2,8 @@ import numpy as np
 
 from config.decorators import Decorators
 from src.processors.preprocessing.Midas import MiDaS_predict
-from utils.Image import Image
-from utils.Processor import Processor
+from util.Image import Image
+from util.Processor import Processor
 
 
 class Midas(Processor):
@@ -15,4 +15,4 @@ class Midas(Processor):
 
     @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
-        self._image = MiDaS_predict(self._origin)
+        self._image = MiDaS_predict(self._origin) / 255

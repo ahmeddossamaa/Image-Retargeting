@@ -9,7 +9,7 @@ from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ForwardSC import ForwardSC
 from src.processors.sc.MiddleSC import MiddleSC
-from utils.Image import Image
+from util.Image import Image
 
 path = DataPath.INPUT_PATH.value
 

@@ -8,7 +8,7 @@ from src.processors.sc.DisconnectedSC import DisconnectedSC
 from src.processors.sc.DisconnectedSCV2 import DisconnectedSCV2
 from src.processors.sc.ForwardSC import ForwardSC
 from src.processors.sc.ThreadedSC import ThreadedSC
-from utils.Image import Image
+from util.Image import Image
 from config.plotter import Plotter
 
 name = "img_5.png"

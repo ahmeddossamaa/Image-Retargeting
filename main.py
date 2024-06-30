@@ -5,10 +5,10 @@ class Main:
         if Main.__app is not None:
             raise Exception("App is already running!")
 
-        from utils.App import initializeApp
+        from util.App import initializeApp
         self.__app = initializeApp(__name__)
 
-        from utils.Socket import initializeSocket
+        from util.Socket import initializeSocket
         initializeSocket(self.__app)
 
         from config.controllers import initializeControllers
