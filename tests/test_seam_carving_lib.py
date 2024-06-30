@@ -5,7 +5,7 @@ from config.constants import DataPath
 from config.decorators import Decorators
 from config.plotter import Plotter
 from src.processors.SobelFilter import SobelFilter
-from utils.Image import Image
+from util.Image import Image
 
 name = "img_6.png"
 

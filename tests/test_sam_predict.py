@@ -4,8 +4,8 @@ from segment_anything import SamPredictor
 
 from config.constants import DataPath
 from config.plotter import Plotter
-from utils.Image import Image
-from utils.Sam import sam
+from util.Image import Image
+from util.Sam import sam
 
 mask_predictor = SamPredictor(sam)
 

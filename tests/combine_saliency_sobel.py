@@ -10,7 +10,7 @@ from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ForwardSCV2 import ForwardSCV2
 from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.ForwardSC import ForwardSC
-from utils.Image import Image
+from util.Image import Image
 from config.plotter import Plotter
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter

@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from utils.Image import Image
+from util.Image import Image
 
 
 class Processor:

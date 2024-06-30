@@ -1,4 +1,4 @@
-from utils.Worker import Worker
+from util.Worker import Worker
 
 
 class Pipeline:

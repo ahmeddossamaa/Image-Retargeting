@@ -1,7 +1,7 @@
 from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.sc.ForwardSCV2 import ForwardSCV2
-from utils.Image import Image
+from util.Image import Image
 
 i = 5
 

@@ -4,7 +4,7 @@ from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.Combiner import Combiner
 from src.processors.sc.MiddleSCI import MiddleSCI
-from utils.Image import Image
+from util.Image import Image
 
 category = "ball"
 

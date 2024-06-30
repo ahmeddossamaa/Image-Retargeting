@@ -8,7 +8,7 @@ from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.MiddleSCI import MiddleSCI
-from utils.Image import Image
+from util.Image import Image
 
 cat = "ball"
 ratio = 0.75

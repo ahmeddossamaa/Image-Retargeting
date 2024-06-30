@@ -9,7 +9,7 @@ from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.sc.ForwardSC import ForwardSC
-from utils.Image import Image
+from util.Image import Image
 
 n = 2
 

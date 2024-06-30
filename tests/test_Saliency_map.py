@@ -7,7 +7,7 @@ from tensorflow.keras.models import Model
 from config.constants import DataPath
 from config.decorators import Decorators
 from src.processors.sc.ConnectedSC import ConnectedSC
-from utils.Image import Image
+from util.Image import Image
 from src.processors.SobelFilter import SobelFilter
 from config.plotter import Plotter
 from scipy.ndimage import sobel

@@ -6,9 +6,9 @@ from config.plotter import Plotter
 from src.processors.Combiner import Combiner
 from src.processors.Midas import Midas
 from src.processors.sc.MiddleSCI import MiddleSCI
-from utils.Image import Image
-from utils.Pipeline import Pipeline
-from utils.Worker import Worker
+from util.Image import Image
+from util.Pipeline import Pipeline
+from util.Worker import Worker
 
 # img = Image(f"../{DataPath.INPUT_PATH.value}/img_4.png")
 # img2 = Image(f"../{DataPath.INPUT_PATH.value}/img_6.png")

@@ -1,7 +1,7 @@
 from time import sleep
 
-from utils.Pipeline import Pipeline
-from utils.Worker import Worker
+from util.Pipeline import Pipeline
+from util.Worker import Worker
 
 
 def run(num):
