@@ -2,8 +2,8 @@ import numpy as np
 
 from cv2 import normalize, CV_64F, Sobel, NORM_MINMAX, CV_8U, GaussianBlur
 from config.decorators import Decorators
-from utils.Image import Image
-from utils.Processor import Processor
+from util.Image import Image
+from util.Processor import Processor
 
 
 class SobelFilter(Processor):
@@ -12,7 +12,7 @@ class SobelFilter(Processor):
         self._ksize = ksize
         super(SobelFilter, self).__init__(image.gray())
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
         if self._blur:
             self._origin = GaussianBlur(self._origin, (9, 9), 0)

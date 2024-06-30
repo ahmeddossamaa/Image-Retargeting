@@ -3,8 +3,8 @@ import numpy as np
 from config.decorators import Decorators
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
-from utils.Image import Image
-from utils.Processor import Processor
+from util.Image import Image
+from util.Processor import Processor
 
 
 class Combiner(Processor):
@@ -14,7 +14,7 @@ class Combiner(Processor):
 
         super(Combiner, self).__init__(image)
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
         if self._depth is not None:
             if self._invert:

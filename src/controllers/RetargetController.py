@@ -7,7 +7,7 @@ from config.plotter import Plotter
 from src.processors.CannyProcessor import CannyProcessor
 from src.processors.sc.ConnectedSC import ConnectedSC
 from src.processors.SobelFilter import SobelFilter
-from utils.Image import Image
+from util.Image import Image
 
 
 class RetargetController:

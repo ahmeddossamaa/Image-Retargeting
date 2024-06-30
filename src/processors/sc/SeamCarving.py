@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from utils.Algorithm import Algorithm
+from util.Algorithm import Algorithm
 
 
 class SeamCarving(Algorithm):

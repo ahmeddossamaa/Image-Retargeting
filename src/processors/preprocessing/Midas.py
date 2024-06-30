@@ -7,7 +7,9 @@ from config.constants import DataPath
 from config.decorators import Decorators
 from config.helper import Helper
 from config.plotter import Plotter
-from utils.Image import Image
+from src.processors.Combiner import Combiner
+from src.processors.SaliencyMap import SaliencyMap
+from util.Image import Image
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -55,8 +57,9 @@ def MiDaS_predict(image):
     return depth_pred
 
 
-# img = Image(f"../../../data/input/moon.jpg")()
+# img = Image(f"../{DataPath.OUTPUT_PATH.value}/frames/ball.jpg")
 
-# result = MiDaS_predict(img)
-
-# Plotter.image(result)
+# result = MiDaS_predict(img())
+# saliency = Combiner(img)().image()
+#
+# Plotter.images([np.array(saliency)], 1, 2)
