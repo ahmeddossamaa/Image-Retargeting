@@ -1,8 +1,6 @@
 import numpy as np
 
 from config.decorators import Decorators
-from src.processors.SaliencyMap import SaliencyMap
-from src.processors.SobelFilter import SobelFilter
 from src.processors.preprocessing.Midas import MiDaS_predict
 from utils.Image import Image
 from utils.Processor import Processor
