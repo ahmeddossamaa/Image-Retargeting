@@ -1,3 +1,5 @@
 *.pyc
 venv
-data
+data/models
+data/input
+data/output
