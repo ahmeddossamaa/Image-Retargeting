@@ -1,11 +1,20 @@
 import sys
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QPushButton, QLabel, QFileDialog, QStackedWidget, QProgressBar, QVBoxLayout, QHBoxLayout
-)
+from socket import socket
+from threading import Thread
+
+import socketio
+from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtCore import Qt, QUrl, QTimer
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QPushButton, QLabel, QFileDialog, QStackedWidget, QProgressBar, QVBoxLayout, QHBoxLayout,
+    QSizePolicy
+)
+from PyQt5.QtCore import Qt, QTimer, QUrl, pyqtSignal
+
+from config.constants import DataPath
+from src.api import retarget_image
+import os
 
 # Custom stylesheet for the application
 stylesheet = """QWidget {
@@ -18,8 +27,8 @@ QPushButton {
     border-radius: 10px;
     padding: 10px;
     border: 1px solid #111111;
-    font-family: Arial;  /* Change this to your desired font family */
-    font-size: 16px;     /* Change this to your desired font size */
+    font-family: Arial;
+    font-size: 16px;
 }
 QPushButton:hover {
     background-color: #004A94;
@@ -47,8 +56,8 @@ QLabel {
     font-size: 34px;
     color: white;
     background-color: #d9d9d9;
-    border-radius: 10px;  /* Add border radius */
-    padding: 5px; /* Optional: Add some padding */
+    border-radius: 10px;
+    padding: 5px;
 }
 QProgressBar {
     background-color: #1e1e1e;
@@ -62,7 +71,6 @@ QProgressBar::chunk {
 QVideoWidget {
     border: 1px solid #005EBD;
 }
-
 """
 
 
@@ -111,6 +119,10 @@ class ImagePage(QWidget):
         self.stacked_widget = stacked_widget
 
         layout = QVBoxLayout()
+        self.background_label = QLabel(self)
+        self.background_label.setPixmap(QPixmap('image.png'))
+        self.background_label.setScaledContents(True)  # Ensures the image is scaled to fit the label
+        self.background_label.setGeometry(0, 0, 1366, 768)  # Adjust according to your window size
 
         top_layout = QHBoxLayout()
         self.back_button = QPushButton('Back')
@@ -119,22 +131,33 @@ class ImagePage(QWidget):
         layout.addLayout(top_layout)
 
         before_after_layout = QHBoxLayout()
+
+        # Before layout
         before_layout = QVBoxLayout()
         self.before_label = QLabel('Before')
         self.before_label.setAlignment(Qt.AlignCenter)
-        self.before_label.setFixedHeight(20)  # Set a fixed height for the label
+        self.before_label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.before_label.setStyleSheet("font-size: 20px;")  # Optional: Adjust font size
+
         self.before_pixmap = QLabel()
         self.before_pixmap.setFixedSize(500, 500)
+        self.before_pixmap.setStyleSheet("border: 1px solid black;")  # Optional: Add border to pixmap
+
         before_layout.addWidget(self.before_label)
         before_layout.addWidget(self.before_pixmap, alignment=Qt.AlignHCenter)
         before_after_layout.addLayout(before_layout)
 
+        # After layout
         after_layout = QVBoxLayout()
         self.after_label = QLabel('After')
         self.after_label.setAlignment(Qt.AlignCenter)
-        self.after_label.setFixedHeight(20)  # Set a fixed height for the label
+        self.after_label.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.after_label.setStyleSheet("font-size: 20px;")  # Optional: Adjust font size
+
         self.after_pixmap = QLabel()
         self.after_pixmap.setFixedSize(500, 500)
+        self.after_pixmap.setStyleSheet("border: 1px solid black;")  # Optional: Add border to pixmap
+
         after_layout.addWidget(self.after_label)
         after_layout.addWidget(self.after_pixmap, alignment=Qt.AlignHCenter)
         before_after_layout.addLayout(after_layout)
@@ -160,16 +183,25 @@ class ImagePage(QWidget):
                                                    "All Files (*);;Image Files (*.png;*.jpg;*.jpeg)", options=options)
         if file_name:
             pixmap = QPixmap(file_name)
-            if pixmap.width() > 600 or pixmap.height() > 600:
-                pixmap = pixmap.scaled(600, 600, Qt.KeepAspectRatio)
+
             self.before_pixmap.setPixmap(pixmap)
             print(f"Uploaded image: {file_name}")
+            self.current_file_name = file_name
 
     def retarget_image(self):
-        # Placeholder for the image retargeting function
-        print("Retargeting image...")
-        # Update the 'after_pixmap' with the retargeted image
-        self.after_pixmap.setPixmap(self.before_pixmap.pixmap())  # Just copying for now
+        if hasattr(self, 'current_file_name'):
+            try:
+                retargeted_image = retarget_image(self.current_file_name, ratio=0.75)  # Returns a NumPy array
+                height, width, channel = retargeted_image.shape
+                bytes_per_line = 3 * width
+                q_image = QImage(retargeted_image.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                q_pixmap = QPixmap.fromImage(q_image)
+                self.after_pixmap.setPixmap(q_pixmap)
+                print("Retargeting image...")
+            except Exception as e:
+                print(f"An error occurred while retargeting the image: {e}")
+        else:
+            print("No image uploaded to retarget.")
 
     def show_main_page(self):
         self.stacked_widget.setCurrentIndex(0)
@@ -178,6 +210,11 @@ class ImagePage(QWidget):
 class VideoPage(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
+        self.sio = socketio.Client(reconnection=True, reconnection_attempts=3,
+                                        reconnection_delay=5, reconnection_delay_max=5, logger=True)
+        global frame_counter, frames_count
+        frame_counter = 0
+        frames_count = 0
         self.stacked_widget = stacked_widget
         self.is_playing = False
 
@@ -228,7 +265,6 @@ class VideoPage(QWidget):
         layout.addLayout(middle_layout)
 
         self.progress_bar = QProgressBar()
-        self.progress_bar.setValue(100)  # Set to 100% for now
         layout.addWidget(self.progress_bar)
 
         play_buttons_layout = QHBoxLayout()
@@ -239,6 +275,21 @@ class VideoPage(QWidget):
         layout.addLayout(play_buttons_layout)
 
         self.setLayout(layout)
+        self.initSocket()
+
+        self.file_name = None
+
+    def show_main_page(self):
+        self.stacked_widget.setCurrentIndex(0)
+
+    def initSocket(self):
+        self.sio.connect(url="http://127.0.0.1:5000")
+        self.sio.on('video', self.load_retargeted_video, namespace=None)
+        self.sio.on('frame', self.updateProgress)
+
+    def updateProgress(self, progress):
+        self.progrgess = progress
+        self.progress_bar.setValue(int(float(self.progrgess) * 100))
 
     def upload_video(self):
         options = QFileDialog.Options()
@@ -247,27 +298,43 @@ class VideoPage(QWidget):
         if file_name:
             media_content = QMediaContent(QUrl.fromLocalFile(file_name))
             self.video_player_before.setMedia(media_content)
-            self.video_player_after.setMedia(media_content)  # Set the same video for "after" as a placeholder
             print(f"Uploaded video: {file_name}")
 
             # Play the videos to ensure they are loaded
             self.video_player_before.play()
+            # self.video_player_after.play()
+            self.is_playing = False
+            self.play_button.setText('Play Both')
+
+            self.file_name = file_name
+
+
+
+
+    def load_retargeted_video(self, output_path):
+
+        if output_path:
+            media_content = QMediaContent(QUrl.fromLocalFile(output_path))
+            self.video_player_after.setMedia(media_content)
             self.video_player_after.play()
             self.is_playing = True
             self.play_button.setText('Stop Both')
-
+            print(f"Loaded retargeted video: {output_path}")
+        else:
+            print("Failed to load retargeted video.")
     def retarget_video(self):
-        # Placeholder for the video retargeting function
-        print("Retargeting video...")
-        # Simulate a loading process
-        self.progress_bar.setValue(50)
-        QTimer.singleShot(2000, self.finish_retargeting)
+        if self.file_name is None:
+            print("No file name")
+            return
 
-    def finish_retargeting(self):
-        # Placeholder to simulate that the video processing is done
-        # Here you would replace the media of the 'after' player with the processed video
-        self.progress_bar.setValue(100)
-        print("Video retargeting complete")
+        print("Retargeting video...")
+        self.sio.emit('video', (
+            self.file_name,
+            f"{DataPath.OUTPUT_PATH.value}/output.mp4",
+            0.75
+        ))
+
+        # self.update_progress(frame_counter, frames_count)
 
     def toggle_play(self):
         if self.progress_bar.value() == 100:
@@ -286,12 +353,16 @@ class VideoPage(QWidget):
     def show_main_page(self):
         self.stacked_widget.setCurrentIndex(0)
 
+    def finish_retargeting(self):
+
+        self.progress_bar.setValue(100)
+        print("Video retargeting complete")
+
 
 class AboutPage(QWidget):
     def __init__(self, stacked_widget):
         super().__init__()
         self.stacked_widget = stacked_widget
-
         layout = QVBoxLayout()
 
         top_layout = QHBoxLayout()
@@ -302,6 +373,7 @@ class AboutPage(QWidget):
 
         self.label = QLabel('This is the About page.')
         layout.addWidget(self.label)
+
         self.setLayout(layout)
 
     def show_main_page(self):

@@ -63,16 +63,14 @@ class Helper:
             D = energy[j, left_bound]
             F = energy[j, right_bound]
 
-            # a = matrix_old[j - step, left_bound]
+            a = matrix_old[j - step, left_bound]
             b = matrix_old[j - step, i]
             e = matrix_old[j, i]
 
-            # Cb = abs(C - b)
+            Cb = abs(C - b)
 
             Fe = abs(F - e)
-            FD = DF = abs(F - D)
-
-            De = abs(D - e)
+            FD = abs(F - D)
 
             # r = Fe + FD
 
@@ -80,13 +78,9 @@ class Helper:
             # cu = r + Cb + abs(A - C)
             # cr = r + abs(B - F)
 
-            cl = DF + abs(D - B) + De
-
-            t1 = abs(A - b) + De
-            t2 = abs(C - b) + Fe
-
-            cm = abs(A - C) + FD + ((t1 + t2) / 2)
-            cr = FD + abs(F - B) + abs(F - e)
+            cl = FD + Cb + Fe + abs(D - B) + abs(B - a)
+            cm = FD + Cb + Fe + abs(A - C)
+            cr = FD + Fe + abs(F - B)
 
             return min(
                 cl + matrix[j - step, left_bound],

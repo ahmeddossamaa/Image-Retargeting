@@ -4,6 +4,7 @@ from cv2 import VideoCapture, CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME
 from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.Combiner import Combiner
+from src.processors.Fucker import Fucker
 from src.processors.sc.MiddleSCI import MiddleSCI
 # from util.Image import Image
 # from util.Pipeline import Pipeline
@@ -16,7 +17,7 @@ from util.Worker import Worker
 def retarget_image(path: str, ratio: float):
     img = Image(path)
 
-    return MiddleSCI(img, ratio, converter=Combiner)()
+    return MiddleSCI(img, ratio, converter=Fucker)()
 
 
 def retarget_video(path: str, out_path: str, ratio: float):
@@ -87,4 +88,4 @@ def retarget_video(path: str, out_path: str, ratio: float):
 #
 # Plotter.image(image)
 
-retarget_video(f"{DataPath.INPUT_PATH.value}/videos/ball.mp4", f"{DataPath.INPUT_PATH.value}/videos/ball_retarget.mp4", ratio=0.75)
+# retarget_video(f"{DataPath.INPUT_PATH.value}/videos/ball.mp4", f"{DataPath.INPUT_PATH.value}/videos/ball_retarget.mp4", ratio=0.75)
