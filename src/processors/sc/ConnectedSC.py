@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-import cupy as cp
 
 from config.decorators import Decorators
 from config.helper import Helper

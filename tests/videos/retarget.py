@@ -3,18 +3,17 @@ from cv2 import VideoCapture, VideoWriter, CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, C
 
 from config.constants import DataPath
 from config.plotter import Plotter
-from src.processors.Combiner import Combiner
+from src.processors.Fucker import Fucker
+# from src.processors.Combiner import Combiner
 from src.processors.Midas import Midas
+from src.processors.sc.ImprovedSC import ImprovedSC
 from src.processors.sc.MiddleSCI import MiddleSCI
 from util.Image import Image
 from util.Pipeline import Pipeline
 from util.Worker import Worker
 
-# img = Image(f"../{DataPath.INPUT_PATH.value}/img_4.png")
-# img2 = Image(f"../{DataPath.INPUT_PATH.value}/img_6.png")
-#
-# sc = MiddleSCI(img, 0.75, converter=Combiner)
-# sc2 = MiddleSCI(img2, 0.75, converter=Combiner)
+
+import torch
 
 global energy, frames_count, frame_counter
 
@@ -57,7 +56,7 @@ def save(out: VideoWriter, *args):
 
     out.write(img)
 
-    Image.save(img, f"../{DataPath.OUTPUT_PATH.value}/frames/ball/{frame_counter}.jpg")
+    Image.save(img, f"../{DataPath.OUTPUT_PATH.value}/frames/{cat}/{frame_counter}.jpg")
 
     frame_counter += 1
     if frame_counter == frames_count:
@@ -113,21 +112,21 @@ def retarget_video(in_path: str, out_path: str, ratio: float):
 
         img = Image("", data=frame)
 
-        sc = MiddleSCI(img, ratio, converter=Midas, prev_matrix=True)
+        sc = ImprovedSC(img, ratio, converter=Fucker, prev_matrix=True)
 
         # energy = sc.get_matrix()
 
         pipeline.push((sc, target, img))
 
-        if count == 104:
-            break
+        # if count == 104:
+        #     break
 
     source.release()
     # print(frame_counter, frames_count)
 
 
-cat = "ball"
-v = 6
+cat = "car"
+v = 7
 
 retarget_video(
     in_path=f"../{DataPath.INPUT_PATH.value}/videos/{cat}.mp4",

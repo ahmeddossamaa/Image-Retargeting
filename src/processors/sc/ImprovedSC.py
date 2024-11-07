@@ -7,7 +7,6 @@ from config.decorators import Decorators
 from config.helper import Helper
 from config.plotter import Plotter
 from src.processors.sc.SeamCarvingI import SeamCarvingI
-import cupy as cp
 
 
 class ImprovedSC(SeamCarvingI):
@@ -16,30 +15,31 @@ class ImprovedSC(SeamCarvingI):
     _energy: np.array = None
     _matrix: np.array = None
 
+    Matrix = None
+
+    def __init__(self, img, ratio, converter=None, feature_map=None, prev_matrix: bool = False):
+        self.prev_matrix = prev_matrix
+
+        super(ImprovedSC, self).__init__(img, ratio, converter=converter, feature_map=feature_map)
+
     def topdown(self, s, e, step):
         assert self._energy is not None, "Energy Map is None"
 
         height, width = self._energy.shape
+
+        self._matrix = np.zeros((self._height, self._width))
+
+        matrix = self._matrix
 
         for j in range(s, e, step):
             for i in range(width):
                 if j == s:
                     self._matrix[j, i] = self._energy[j, i]
                 else:
-                    left_bound = max(i - 1, 0)
-                    right_bound = min(i + 1, width - 1)
-
-                    cu_val = abs(self._energy[j - step, right_bound] - self._energy[j, left_bound])
-
-                    cl_val = abs(self._energy[j - step, i] - self._energy[j, left_bound]) + cu_val
-                    cr_val = abs(self._energy[j - step, i] - self._energy[j, right_bound]) + cu_val
-
-                    # print(cl_val, cu_val, cr_val)
-
-                    self._matrix[j, i] = self._energy[j, i] + min(
-                        cl_val + self._matrix[j - step, left_bound],
-                        cu_val + self._matrix[j - step, i],
-                        cr_val + self._matrix[j - step, right_bound],
+                    matrix[j, i] = self._energy[j, i] + (
+                        Helper.Image.forward_energy(matrix, self._energy, width, j, i, step)
+                        if ImprovedSC.Matrix is None
+                        else Helper.Image.forward_energy_3d(matrix, ImprovedSC.Matrix, self._energy, width, j, i, step)
                     )
 
     @Decorators.Loggers.log_class_method_time
@@ -54,8 +54,11 @@ class ImprovedSC(SeamCarvingI):
         #     executor.submit(self.topdown, 0, self._mid, 1)
         #     executor.submit(self.topdown, self._height - 1, self._mid - 1, -1)
 
-        self.topdown(0, self._mid, 1)
-        self.topdown(self._height - 1, self._mid - 1, -1)
+        self.topdown(0, self._height, 1)
+        # self.topdown(self._height - 1, self._mid - 1, -1)
+
+        if self.prev_matrix:
+            ImprovedSC.Matrix = self._matrix.copy()
 
         return self._matrix
 
@@ -105,7 +108,7 @@ class ImprovedSC(SeamCarvingI):
         return new_image
 
     def remove_seam(self, indices, s, e, step):
-        print(s, e)
+        # print(s, e)
 
         old_image = self._image.copy()
         old_matrix = self._matrix.copy()
@@ -138,13 +141,14 @@ class ImprovedSC(SeamCarvingI):
         #     self._matrix[self._mid - 1] + self._matrix[self._mid]
         # )
 
-        middle = self._matrix[self._mid - 1] + self._matrix[self._mid]
+        # middle = self._matrix[self._mid - 1] + self._matrix[self._mid]
+        middle = self._matrix[-1]
 
         # with ThreadPoolExecutor() as exe:
         #     exe.submit(self.bottomup, middle, self._mid - 1, 0, -1)
         #     exe.submit(self.bottomup, middle, self._mid, self._height - 1, 1)
 
-        self._image[:self._mid, :dw] = self.remove_seam(middle, self._mid - 1, -1, -1)
-        self._image[self._mid:, :dw] = self.remove_seam(middle, self._mid, self._height, 1)
+        self._image[:, :dw] = self.remove_seam(middle, self._height - 1, -1, -1)
+        # self._image[self._mid:, :dw] = self.remove_seam(middle, 0, self._height, 1)
 
         return self._image[:, :dw]

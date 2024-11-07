@@ -4,6 +4,7 @@ from enum import Enum
 
 class DataPath(Enum):
     INPUT_PATH = "../data/input"
+    MODELS_PATH = "../data/models"
     OUTPUT_PATH = "../data/output"
 
 

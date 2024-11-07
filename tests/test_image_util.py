@@ -15,6 +15,7 @@ name = "img_5.png"
 
 PATH = f"{DataPath.INPUT_PATH.value}/{name}"
 
+
 img_rgb = Image(PATH, gray=False)
 img_gray = Image(PATH, gray=True)()
 

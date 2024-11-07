@@ -1,4 +1,5 @@
 import numpy as np
+from cv2 import normalize, NORM_MINMAX, CV_8U
 
 from config.decorators import Decorators
 from config.helper import Helper
@@ -53,7 +54,7 @@ class MiddleSCI(SeamCarvingI):
 
         if self.prev_matrix:
             MiddleSCI.Matrix = self._matrix.copy()
-
+            # MiddleSCI.Matrix = normalize(self._matrix.copy(), None, 0, 255, NORM_MINMAX, CV_8U)
         return self._matrix
 
     @Decorators.Loggers.log_class_method_time

@@ -3,12 +3,8 @@ import numpy as np
 from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.Combiner import Combiner
+from src.processors.Fucker import Fucker
 from src.processors.sc.ImprovedSC import ImprovedSC
-from src.processors.SaliencyMap import SaliencyMap
-from src.processors.SobelFilter import SobelFilter
-from src.processors.sc.ConnectedSC import ConnectedSC
-from src.processors.sc.ForwardSC import ForwardSC
-from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.MiddleSCI import MiddleSCI
 from util.Image import Image
 
@@ -18,7 +14,7 @@ if __name__ == '__main__':
 
     path = f"{DataPath.INPUT_PATH.value}"
 
-    img = Image(f"{path}/img_10.png")
+    img = Image(f"{path}/football.png")
     rgb = img.rgb()
 
     # depth = Image(f"{path}/depth.jpg")()
@@ -33,7 +29,7 @@ if __name__ == '__main__':
     # result = MiddleSC(rgb, energy, 0.75, color=True)()
     # forward = ForwardSC(rgb, energy, 0.75, color=True)()
 
-    result = MiddleSCI(img, 0.75, converter=Combiner)()
+    result = ImprovedSC(img, 0.75, converter=Fucker)()
     # result = MiddleSC(rgb, energy, 0.75)()
 
     Plotter.images([rgb, result], 1, 2)
