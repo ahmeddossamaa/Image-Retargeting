@@ -1,5 +1,6 @@
 import numpy as np
-from cv2 import VideoWriter, VideoCapture, CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT
+from cv2 import VideoWriter, VideoCapture, CAP_PROP_FPS, CAP_PROP_FRAME_WIDTH, CAP_PROP_FRAME_HEIGHT, cvtColor, \
+    COLOR_BGR2RGB
 from config.decorators import Decorators
 from src.processors.Fucker import Fucker
 from src.processors.sc.ImprovedSC import ImprovedSC
@@ -24,19 +25,29 @@ def carve(obj: MiddleSCI, out: VideoWriter, *args):
     return out, res
 
 
+import os
+
+def ensure_directory_exists(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 def save(out_path):
     def saver(out: VideoWriter, *args):
         img = np.array(args)[0]
-        out.write(img)
+        # out.write(img)
+        out.write(cvtColor(img, COLOR_BGR2RGB))
         global frame_counter, frames_count
         frame_counter += 1
         Socket.get_instance().emit("frame", frame_counter / frames_count)
         if frame_counter == frames_count:
             print("released")
             out.release()
-            Socket.get_instance().emit("video", out_path)
+            abs_out_path = os.path.abspath(out_path)  # Get absolute path
+            print(f"Video path emitted: {abs_out_path}")  # Verification
+            Socket.get_instance().emit("video", abs_out_path)
 
     return saver
+
 
 
 class VideoController:
@@ -59,6 +70,9 @@ class VideoController:
         width = int(source.get(CAP_PROP_FRAME_WIDTH) * ratio)
         height = int(source.get(CAP_PROP_FRAME_HEIGHT))
 
+        # Ensure the output directory exists
+        ensure_directory_exists(os.path.dirname(out_path))
+
         fourcc = VideoWriter().fourcc(*'mp4v')
         target = VideoWriter(out_path, fourcc, fps, (width, height))
 
@@ -73,6 +87,8 @@ class VideoController:
 
             frames_count += 1
             img = Image("", data=frame)
+
+            # sc = MiddleSCI(img, ratio, converter=Fucker, prev_matrix=True)
             sc = ImprovedSC(img, ratio, converter=Fucker, prev_matrix=True)
             VideoController.pipeline.push((sc, target, img))
 

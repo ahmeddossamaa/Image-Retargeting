@@ -125,7 +125,7 @@ def retarget_video(in_path: str, out_path: str, ratio: float):
     # print(frame_counter, frames_count)
 
 
-cat = "ball"
+cat = "car"
 v = 7
 
 retarget_video(
