@@ -1,6 +1,7 @@
 import io
 
 import PIL.Image
+import cv2
 import numpy as np
 
 
@@ -41,15 +42,15 @@ class Helper:
             left_bound = max(i - 1, 0)
             right_bound = min(i + 1, width - 1)
 
-            cu_val = abs(energy[j - step, right_bound] - energy[j, left_bound])
+            cu_val = abs(energy[j - step][right_bound] - energy[j][left_bound])
 
-            cl_val = abs(energy[j - step, i] - energy[j, left_bound]) + cu_val
-            cr_val = abs(energy[j - step, i] - energy[j, right_bound]) + cu_val
+            cl_val = abs(energy[j - step][i] - energy[j][left_bound]) + cu_val
+            cr_val = abs(energy[j - step][i] - energy[j][right_bound]) + cu_val
 
             return min(
-                cl_val + matrix[j - step, left_bound],
-                cu_val + matrix[j - step, i],
-                cr_val + matrix[j - step, right_bound],
+                cl_val + matrix[j - step][left_bound],
+                cu_val + matrix[j - step][i],
+                cr_val + matrix[j - step][right_bound],
             )
         
         @staticmethod
@@ -63,30 +64,18 @@ class Helper:
             D = energy[j, left_bound]
             F = energy[j, right_bound]
 
-            # a = matrix_old[j - step, left_bound]
+            a = matrix_old[j - step, left_bound]
             b = matrix_old[j - step, i]
             e = matrix_old[j, i]
 
-            # Cb = abs(C - b)
+            Cb = abs(C - b)
 
             Fe = abs(F - e)
-            FD = DF = abs(F - D)
+            FD = abs(F - D)
 
-            De = abs(D - e)
-
-            # r = Fe + FD
-
-            # cl = r + Cb + abs(B - D) + abs(B - a)
-            # cu = r + Cb + abs(A - C)
-            # cr = r + abs(B - F)
-
-            cl = DF + abs(D - B) + De
-
-            t1 = abs(A - b) + De
-            t2 = abs(C - b) + Fe
-
-            cm = abs(A - C) + FD + ((t1 + t2) / 2)
-            cr = FD + abs(F - B) + abs(F - e)
+            cl = FD + Cb + Fe + abs(D - B) + abs(B - a)
+            cm = FD + Cb + Fe + abs(A - C)
+            cr = FD + Fe + abs(F - B)
 
             return min(
                 cl + matrix[j - step, left_bound],
@@ -127,3 +116,18 @@ class Helper:
                 temp = right, r
 
             return temp
+
+        @staticmethod
+        def normalize(data, min_val=0, max_val=1):
+            data_min = np.min(data)
+            data_max = np.max(data)
+
+            if data_max - data_min == 0:
+                return np.full_like(data, min_val)
+
+            normalized = (data - data_min) / (data_max - data_min)
+            return normalized * (max_val - min_val) + min_val
+
+        @staticmethod
+        def binarize(image):
+            return cv2.threshold(image.astype(np.uint8), 0, 1, cv2.THRESH_BINARY + cv2.THRESH_OTSU)

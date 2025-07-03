@@ -7,7 +7,7 @@ from config.plotter import Plotter
 from src.processors.CannyProcessor import CannyProcessor
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from src.processors.sc.ForwardSC import ForwardSC
 from util.Image import Image
 
@@ -62,7 +62,7 @@ energy = grab_cut_energy(image, img_gray)
 
 # Plotter.image(energy)
 
-backward = ConnectedSC(img_rgb, energy, 0.75)()
+backward = BackwardSC(img_rgb, energy, 0.75)()
 forward = ForwardSC(img_rgb, energy, 0.75)()
 
 Plotter.images([img_rgb, energy, backward, forward], 2, 2)

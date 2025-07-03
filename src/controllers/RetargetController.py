@@ -5,7 +5,7 @@ from flask import request, jsonify, Response
 from config.helper import Helper
 from config.plotter import Plotter
 from src.processors.CannyProcessor import CannyProcessor
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from src.processors.SobelFilter import SobelFilter
 from util.Image import Image
 
@@ -33,7 +33,7 @@ class RetargetController:
             # energy = CannyProcessor(img_gray)().image()
             energy = SobelFilter(img_gray)().image()
 
-            img_rgb = ConnectedSC(img_rgb, energy, ratio)()
+            img_rgb = BackwardSC(img_rgb, energy, ratio)()
 
             end_time = time.perf_counter()
 

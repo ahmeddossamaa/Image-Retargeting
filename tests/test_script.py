@@ -6,7 +6,7 @@ from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from src.processors.sc.ForwardSC import ForwardSC
 from src.processors.sc.MiddleSC import MiddleSC
 from util.Image import Image

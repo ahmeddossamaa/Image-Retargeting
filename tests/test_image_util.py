@@ -1,7 +1,7 @@
 from config.constants import DataPath
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from src.processors.sc.ConnectedSCV2 import ConnectedSCV2
 from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.DisconnectedSC import DisconnectedSC
@@ -14,6 +14,7 @@ from config.plotter import Plotter
 name = "img_5.png"
 
 PATH = f"{DataPath.INPUT_PATH.value}/{name}"
+
 
 img_rgb = Image(PATH, gray=False)
 img_gray = Image(PATH, gray=True)()
@@ -39,7 +40,7 @@ energy2 = SobelFilter(energy_s, ksize=15)().image()
 # Plotter.image(energy)
 
 # img_new = ThreadedSC(img_new, energy, ratio)()
-img_new = ConnectedSC(img_org, energy1, ratio, color=False)()
+img_new = BackwardSC(img_org, energy1, ratio, color=False)()
 img_new_blurred = ForwardSC(img_org, energy1, ratio, color=False)()
 # img_new2 = ConnectedSCV2(img_new2, energy, ratio, color=True)()
 # img_new = ConnectedSCV3(img_new, energy, ratio, color=False)()

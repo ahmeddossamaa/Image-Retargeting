@@ -1,32 +1,37 @@
+import cv2
 import numpy as np
-from cv2 import threshold, THRESH_BINARY
-
-from config.decorators import Decorators
-from config.plotter import Plotter
-from util.Image import Image
+from config.helper import Helper
 from util.Processor import Processor
-from cv2.saliency import StaticSaliencyFineGrained
 
 
 class SaliencyMap(Processor):
-    def __init__(self, image: Image, ts=None):
-        self.ts = ts
+    def __init__(self, image, method='fine_grained'):
+        super().__init__(image)
+        self.method = method
 
-        super(SaliencyMap, self).__init__(image)
-
-    # @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
-        l_channel, a_channel, b_channel = Image.split(self._image.lab())
+        image_array = self._image()
 
-        Plotter.images([
-            l_channel,
-            a_channel,
-            b_channel,
-        ], 1, 3, off=True)
+        if image_array.dtype != np.uint8:
+            image_array = (image_array * 255).astype(np.uint8)
 
-        _, saliency_map = StaticSaliencyFineGrained().create().computeSaliency(l_channel)
+        if self.method == 'spectral':
+            saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
+        elif self.method == 'fine_grained':
+            saliency = cv2.saliency.StaticSaliencyFineGrained_create()
+        else:
+            raise ValueError(f"Unknown method: {self.method}")
 
-        if self.ts:
-            _, saliency_map = threshold(saliency_map, self.ts, 1, THRESH_BINARY)
+        success, saliency_map = saliency.computeSaliency(image_array)
 
-        self._image = np.array(saliency_map)
+        if success:
+            saliency_normalized = Helper.Math.normalize(saliency_map, 0, 1)
+        else:
+            # Fallback to intensity if saliency fails
+            if len(image_array.shape) == 3:
+                intensity = 0.299 * image_array[:, :, 0] + 0.587 * image_array[:, :, 1] + 0.114 * image_array[:, :, 2]
+            else:
+                intensity = image_array
+            saliency_normalized = Helper.Math.normalize(intensity, 0, 1)
+
+        self._image = saliency_normalized

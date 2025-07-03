@@ -1,4 +1,7 @@
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.use('TkAgg')
 
 
 class Plotter:
@@ -26,6 +29,7 @@ class Plotter:
 
         Plotter.__set_plt(img, title)
 
+        plt.switch_backend('TkAgg')
         plt.show()
 
     @staticmethod
@@ -44,4 +48,5 @@ class Plotter:
                 Plotter.__transform_to_rgb(img)
             )
 
-        plt.show()
+        plt.switch_backend('TkAgg')
+        plt.show(block=True)

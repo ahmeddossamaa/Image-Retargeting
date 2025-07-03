@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 from config.constants import DataPath
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from src.processors.sc.ForwardSCV2 import ForwardSCV2
 from src.processors.sc.MiddleSC import MiddleSC
 from src.processors.sc.ForwardSC import ForwardSC

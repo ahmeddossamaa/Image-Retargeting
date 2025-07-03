@@ -86,7 +86,7 @@ class ForwardSCV2(SeamCarving):
 
                 pass
 
-        Plotter.image(matrix, off=False)
+        # Plotter.image(matrix, off=False)
 
         new_image = [[] for i in range(height)]
         new_matrix = [[] for i in range(height)]

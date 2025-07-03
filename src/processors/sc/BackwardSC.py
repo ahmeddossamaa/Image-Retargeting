@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-import cupy as cp
 
 from config.decorators import Decorators
 from config.helper import Helper
@@ -9,10 +8,10 @@ from config.plotter import Plotter
 from src.processors.sc.SeamCarving import SeamCarving
 
 
-class ConnectedSC(SeamCarving):
+class BackwardSC(SeamCarving):
     def __init__(self, img, energy, ratio, color=False):
         self._color = color
-        super(ConnectedSC, self).__init__(img, energy, ratio)
+        super(BackwardSC, self).__init__(img, energy, ratio)
 
     @Decorators.Loggers.log_class_method_time
     def _main(self, *args, **kwargs):

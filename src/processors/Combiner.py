@@ -1,6 +1,5 @@
 import numpy as np
 
-from config.decorators import Decorators
 from src.processors.SaliencyMap import SaliencyMap
 from src.processors.SobelFilter import SobelFilter
 from util.Image import Image

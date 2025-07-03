@@ -1,8 +1,6 @@
 import numpy as np
 
 from config.decorators import Decorators
-from src.processors.SaliencyMap import SaliencyMap
-from src.processors.SobelFilter import SobelFilter
 from src.processors.preprocessing.Midas import MiDaS_predict
 from util.Image import Image
 from util.Processor import Processor
@@ -15,6 +13,5 @@ class Midas(Processor):
 
         super(Midas, self).__init__(image)
 
-    @Decorators.Loggers.log_class_method_time
     def main(self, *args, **kwargs):
-        self._image = MiDaS_predict(self._origin) / 255
+        self._image = MiDaS_predict(self._origin)

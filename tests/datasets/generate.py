@@ -2,7 +2,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 from src.processors.Combiner import Combiner
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from src.processors.sc.ForwardSC import ForwardSC
 from src.processors.sc.MiddleSC import MiddleSC
 from util.Image import Image
@@ -17,7 +17,7 @@ ratio = 0.75
 
 
 def backward(i, rgb, energy):
-    backward = ConnectedSC(rgb, energy, ratio)()
+    backward = BackwardSC(rgb, energy, ratio)()
 
     Image.save(backward, f"{path}/{i}/backward.jpg")
 
@@ -51,7 +51,7 @@ for i in dirs:
 
         energy = Combiner(img, depth=depth, invert=True)().image()
 
-        backward = ConnectedSC(rgb, energy, ratio)()
+        backward = BackwardSC(rgb, energy, ratio)()
         Image.save(backward, f"{dir}/u-backward.jpg")
 
         forward = ForwardSC(rgb, energy, ratio)()

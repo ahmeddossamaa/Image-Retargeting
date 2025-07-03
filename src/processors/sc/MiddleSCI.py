@@ -2,7 +2,6 @@ import numpy as np
 
 from config.decorators import Decorators
 from config.helper import Helper
-from config.plotter import Plotter
 from src.processors.sc.SeamCarvingI import SeamCarvingI
 
 
@@ -25,7 +24,7 @@ class MiddleSCI(SeamCarvingI):
     def get_matrix(self, new=False):
         return self._matrix if not new else self._new_matrix
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def accumulate(self, energy):
         width = self._width
 
@@ -40,9 +39,9 @@ class MiddleSCI(SeamCarvingI):
             for j in range(s, e, step):
                 for i in range(width):
                     if j == s:
-                        matrix[j, i] = self._energy[j, i]
+                        matrix[j, i] = self._energy[j][i]
                     else:
-                        matrix[j, i] = self._energy[j, i] + (
+                        matrix[j, i] = self._energy[j][i] + (
                             Helper.Image.forward_energy(matrix, self._energy, width, j, i, step)
                             if MiddleSCI.Matrix is None
                             else Helper.Image.forward_energy_3d(matrix, MiddleSCI.Matrix, self._energy, width, j, i, step)
@@ -52,11 +51,12 @@ class MiddleSCI(SeamCarvingI):
         topdown(self._height - 1, self._mid - 1, -1)
 
         if self.prev_matrix:
+            # MiddleSCI.Matrix = normalize(self._matrix.copy(), None, 0, 255, NORM_MINMAX, CV_8U)
             MiddleSCI.Matrix = self._matrix.copy()
 
         return self._matrix
 
-    @Decorators.Loggers.log_class_method_time
+    # @Decorators.Loggers.log_class_method_time
     def remove(self, energy):
         # print("start removal")
         middle = self._matrix[self._mid - 1] + self._matrix[self._mid]

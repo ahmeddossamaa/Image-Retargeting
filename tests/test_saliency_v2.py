@@ -1,7 +1,7 @@
 from config.constants import DataPath
 from config.plotter import Plotter
 from src.processors.SaliencyMap import SaliencyMap
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from util.Image import Image
 
 PATH = DataPath.INPUT_PATH.value

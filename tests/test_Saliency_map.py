@@ -6,21 +6,26 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import Model
 from config.constants import DataPath
 from config.decorators import Decorators
-from src.processors.sc.ConnectedSC import ConnectedSC
+from src.processors.sc.BackwardSC import BackwardSC
 from util.Image import Image
 from src.processors.SobelFilter import SobelFilter
 from config.plotter import Plotter
 from scipy.ndimage import sobel
 import matplotlib.pyplot as plt
 import time
+from midas import MiDaS
+
 
 # Load pre-trained DenseNet model
 base_model = ResNet50(weights='imagenet')
 model = Model(inputs=base_model.input, outputs=base_model.get_layer('conv5_block3_out').output)
 
-name = "img_5.png"
+name = "img_1.png"
+
 
 image_path = f"{DataPath.INPUT_PATH.value}/{name}"
+
+
 
 def generate_gradient_map(image):
     # Convert image to grayscale if it's not already
@@ -88,12 +93,14 @@ saliency_map_resized = resize_map_to_match(saliency_map, gradient_map_shape)
 depth_map_resized = resize_map_to_match(depth_map, gradient_map_shape)
 depth_map_gray = cv2.cvtColor(depth_map_resized, cv2.COLOR_BGR2GRAY)
 
-energy_map = combine_maps(gradient_map, saliency_map_resized, depth_map_gray)
+# energy_map = combine_maps(gradient_map, saliency_map_resized, depth_map_gray)
+energy_map= saliency_map_resized
 img_new = img_rgb()
 print("test1")
 
-# img_new, energy = SeamCarving(is_connected=True)(img_new, energy_map, 100, 1)
-img_new = ConnectedSC(img_new, energy_map, 0.75, color=False)()
+
+img_new = BackwardSC(img_new, energy_map, 0.75, color=False)()
+
 
 # Calculate time taken
 execution_time = time.time() - start_time
